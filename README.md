@@ -49,7 +49,7 @@ config cert 'defaults'
         option state 'Somewhere'
         option location 'Unknown'
         option commonname 'OpenWrt'
-        ```
+```
 
 then restart uhttpd
 ```
