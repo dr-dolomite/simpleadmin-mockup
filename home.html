@@ -1,624 +1,942 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
     <!-- Logo -->
     <link rel="simpleadmin-logo" href="favicon.ico" />
 
-    <link rel="stylesheet" href="css/bulma/bulma.scss">
-    <link rel="stylesheet" href="css/bulma/css/bulma.min.css">
-    <link rel="stylesheet" href="css/bulma/css/bulma.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/bulma/bulma.scss" />
+    <link rel="stylesheet" href="css/bulma/css/bulma.min.css" />
+    <link rel="stylesheet" href="css/bulma/css/bulma.css" />
+    <link rel="stylesheet" href="css/custom.css" />
 
     <!-- Font awesome icons -->
-    <script src="https://kit.fontawesome.com/b0caedfab3.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/b0caedfab3.js"
+      crossorigin="anonymous"
+    ></script>
 
     <script src="js/styles/nav-state.js"></script>
     <script src="js/styles/toggle-theme.js"></script>
     <script defer src="/js/auth/auth.js"></script>
 
-
     <script>
-        (function () {
-            const savedTheme = localStorage.getItem('theme') || 'theme-dark';
-            document.documentElement.classList.add(savedTheme);
-        })();
+      (function () {
+        const savedTheme = localStorage.getItem("theme") || "theme-dark";
+        document.documentElement.classList.add(savedTheme);
+      })();
     </script>
     <title>QuecManager</title>
-</head>
+  </head>
 
-<body class="body-margin">
+  <body class="body-margin">
     <nav class="navbar is-transparent">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/">
-                <img src="/assets/logo.png" alt="Logo">
-                <span class="title">QuecManager</span>
-            </a>
-            <div class="navbar-burger js-burger" data-target="navbarExampleTransparentExample">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <img src="/assets/logo.png" alt="Logo" />
+          <span class="title">QuecManager</span>
+        </a>
+        <div
+          class="navbar-burger js-burger"
+          data-target="navbarExampleTransparentExample"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <div id="navbarExampleTransparentExample" class="navbar-menu">
+        <div class="navbar-start ml-6">
+          <a class="navbar-item" href="/"> Home </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link"> Cellular </a>
+            <div class="navbar-dropdown is-boxed">
+              <a class="navbar-item" href="/bandlock.html"> Band Locking </a>
+              <a class="navbar-item" href="/cell-locking.html">
+                Cell Locking
+              </a>
+              <a class="navbar-item" href="/cell-scanner.html">
+                Cell Scanner
+              </a>
+              <a class="navbar-item" href="/cell-settings.html">
+                Cell Settings
+              </a>
+              <a class="navbar-item" href="/cell-sms.html"> Cell SMS </a>
             </div>
+          </div>
+          <a class="navbar-item" href="/advance-settings.html"> Advance </a>
+          <a class="navbar-item" href="/about.html"> About </a>
         </div>
 
-        <div id="navbarExampleTransparentExample" class="navbar-menu">
-            <div class="navbar-start ml-6">
-                <a class="navbar-item" href="/"> Home </a>
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link"> Cellular </a>
-                    <div class="navbar-dropdown is-boxed">
-                        <a class="navbar-item" href="/bandlock.html"> Band Locking </a>
-                        <a class="navbar-item" href="/cell-locking.html"> Cell Locking </a>
-                        <a class="navbar-item" href="/cell-scanner.html"> Cell Scanner </a>
-                        <a class="navbar-item" href="/cell-settings.html"> Cell Settings </a>
-                        <a class="navbar-item" href="/cell-sms.html"> Cell SMS </a>
-                    </div>
-                </div>
-                <a class="navbar-item" href="/advance-settings.html"> Advance </a>
-                <a class="navbar-item" href="/about.html"> About </a>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="field is-grouped">
+              <p class="control">
+                <a href="#" class="button is-link is-outlined">
+                  <span class="icon">
+                    <i class="fas fa-arrows-rotate"></i>
+                  </span>
+                  <span>Restart Connection</span>
+                </a>
+              </p>
+              <p class="control">
+                <a href="#" class="button is-warning is-outlined">
+                  <span class="icon">
+                    <i class="fas fa-power-off"></i>
+                  </span>
+                </a>
+              </p>
+              <p class="control">
+                <a
+                  href="#"
+                  class="button is-warning is-outlined js-theme-toggle"
+                >
+                  <span class="icon">
+                    <i class="fas fa-sun"></i>
+                  </span>
+                </a>
+              </p>
+              <p class="control">
+                <a
+                  href="#"
+                  class="button is-warning is-outlined js-theme-toggle"
+                  id="logoutButton"
+                >
+                  <span class="icon">
+                    <i class="fas fa-right-from-bracket"></i>
+                  </span>
+                </a>
+              </p>
             </div>
-
-            <div class="navbar-end">
-                <div class="navbar-item">
-                    <div class="field is-grouped">
-                        <p class="control">
-                            <a href="#" class="button is-link is-outlined">
-                                <span class="icon">
-                                    <i class="fas fa-arrows-rotate"></i>
-                                </span>
-                                <span>Restart Connection</span>
-                            </a>
-                        </p>
-                        <p class="control">
-                            <a href="#" class="button is-warning is-outlined">
-                                <span class="icon">
-                                    <i class="fas fa-power-off"></i>
-                                </span>
-                            </a>
-                        </p>
-                        <p class="control">
-                            <a href="#" class="button is-warning is-outlined js-theme-toggle">
-                                <span class="icon">
-                                    <i class="fas fa-sun"></i>
-                                </span>
-                            </a>
-                        </p>
-                        <p class="control">
-                            <a href="#" class="button is-warning is-outlined js-theme-toggle" id="logoutButton">
-                                <span class="icon">
-                                    <i class="fas fa-right-from-bracket"></i>
-                                </span>
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </nav>
 
     <!-- Cards Start -->
     <div class="column-margin">
-
-        <div class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <h3 class="title is-3">
-                        Summary
-                    </h3>
-                </div>
-                <div class="level-item">
-                    <button class="icon">
-                        <i class="fas fa-arrows-rotate has-text-link"></i>
-                    </button>
-                </div>
-            </div>
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <h3 class="title is-3">Summary</h3>
+          </div>
+          <div class="level-item">
+            <button class="icon">
+              <i class="fas fa-arrows-rotate has-text-link"></i>
+            </button>
+          </div>
         </div>
+      </div>
 
-
-        <div class="fixed-grid has-1-cols-mobile has-2-cols-tablet has-4-cols-desktop">
-            <div class="grid is-size-7-touch">
-                <!-- Cell 1 Start -->
-                <div class="cell">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-title">
-                                SIM Card
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="fixed-grid has-2-cols">
-                                <div class="grid">
-                                    <div class="cell has-text-left">
-                                        <ul>
-                                            <li class="my-2">
-                                                Sim Card Slot in Use
-                                            </li>
-                                            <li class="my-2">
-                                                Sim Card State
-                                            </li>
-                                            <li class="my-2">
-                                                Provider
-                                            </li>
-                                            <li class="my-2">
-                                                Phone Number
-                                            </li>
-                                            <li class="my-2">
-                                                IMSI
-                                            </li>
-                                            <li class="my-2">
-                                                ICCID
-                                            </li>
-                                            <li class="my-2">
-                                                IMEI
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="cell has-text-weight-semibold has-text-right">
-                                        <ul>
-                                            <li class="my-2">
-                                                SIM 1
-                                            </li>
-                                            <li class="my-2">
-                                                Inserted
-                                            </li>
-                                            <li class="my-2">
-                                                T-Mobile
-                                            </li>
-                                            <li class="my-2">
-                                                +639938931024
-                                            </li>
-                                            <li class="my-2">
-                                                123456789
-                                            </li>
-                                            <li class="my-2">
-                                                123456789
-                                            </li>
-                                            <li class="my-2">
-                                                1234567890123
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      <div
+        class="fixed-grid has-1-cols-mobile has-2-cols-tablet has-4-cols-desktop"
+      >
+        <div class="grid is-size-7-touch">
+          <!-- Cell 1 Start -->
+          <div class="cell">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-title">SIM Card</div>
+              </div>
+              <div class="card-content">
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Sim Card Slot in Use</p>
+                  <p class="has-text-weight-bold">
+                    SIM <span id="simSlot"></span>
+                  </p>
                 </div>
-                <!-- Cell 1 End -->
 
-                <!-- Cell 2 -->
-                <div class="cell">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-title">
-                                Connection
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="fixed-grid has-2-cols">
-                                <div class="grid">
-                                    <div class="cell has-text-left">
-                                        <ul>
-                                            <li class="my-2">
-                                                APN
-                                            </li>
-                                            <li class="my-2">
-                                                Operator State
-                                            </li>
-                                            <li class="my-2">
-                                                Data Connection State
-                                            </li>
-                                            <li class="my-2">
-                                                Network Type
-                                            </li>
-                                            <li class="my-2">
-                                                IP Passthrough
-                                            </li>
-                                            <li class="my-2">
-                                                Modem Temperature
-                                            </li>
-                                            <li class="my-2">
-                                                MU-MIMO
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="cell has-text-weight-semibold has-text-right is-clipped">
-                                        <ul>
-                                            <li class="my-2">
-                                                t-mobile.com
-                                            </li>
-                                            <li class="my-2">
-                                                Registered
-                                            </li>
-                                            <li class="my-2">
-                                                <span class="tag is-success has-text-white">
-                                                    Connected
-                                                </span>
-                                            </li>
-                                            <li class="my-2">
-                                                5G (NSA)
-                                            </li>
-                                            <li class="my-2">
-                                                <span class="tag is-danger has-text-white">
-                                                    Disabled
-                                                </span>
-                                            </li>
-                                            <li class="my-2">
-                                                23.5 °C
-                                            </li>
-                                            <li class="my-2">
-                                                <span class="tag is-success has-text-white">
-                                                    Active
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Sim Card State</p>
+                  <p class="has-text-weight-bold" id="simState"></p>
                 </div>
-                <!-- Cell 2 End -->
 
-                <!-- Cell 3 -->
-                <div class="cell">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-title">
-                                Data Transmission
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="fixed-grid has-2-cols">
-                                <div class="grid">
-                                    <div class="cell has-text-left">
-                                        <ul>
-                                            <li class="my-2">
-                                                Carrier Aggregation
-                                            </li>
-                                            <li class="my-2">
-                                                Bandwidth
-                                            </li>
-                                            <li class="my-2">
-                                                Connected Band
-                                            </li>
-                                            <li class="my-2">
-                                                Signal Strength
-                                            </li>
-                                            <li class="my-2">
-                                                Bytes Received
-                                            </li>
-                                            <li class="my-2">
-                                                Bytes Sent
-                                            </li>
-                                            <li class="my-2">
-                                                Uptime
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="cell has-text-weight-semibold has-text-right">
-                                        <ul>
-                                            <li class="my-2">
-                                                Multi
-                                            </li>
-                                            <li class="my-2 is-clipped">
-                                                10 UL / 10 DL / 100 Mhz
-                                            </li>
-                                            <li class="my-2">
-                                                B1 / N41
-                                            </li>
-                                            <li class="my-2">
-                                                <span class="tag is-success has-text-white">
-                                                    65% - Excellent
-                                                </span>
-                                            </li>
-                                            <li class="my-2">
-                                                14.5 MB
-                                            </li>
-                                            <li class="my-2">
-                                                14.5 MB
-                                            </li>
-                                            <li class="my-2">
-                                                5 days
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Sim Card Provider</p>
+                  <p class="has-text-weight-bold" id="simProvider"></p>
                 </div>
-                <!-- Cell 3 End -->
 
-                <!-- Cell 4 -->
-                <div class="cell">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-title">
-                                Cellular Info
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="fixed-grid has-2-cols">
-                                <div class="grid">
-                                    <div class="cell has-text-left">
-                                        <ul>
-                                            <li class="my-2">
-                                                Cell ID
-                                            </li>
-                                            <li class="my-2">
-                                                LAC
-                                            </li>
-                                            <li class="my-2">
-                                                Physical Cell ID
-                                            </li>
-                                            <li class="my-2">
-                                                EARFCN
-                                            </li>
-                                            <li class="my-2">
-                                                Mobile Country Code
-                                            </li>
-                                            <li class="my-2">
-                                                Mobile Network Code
-                                            </li>
-                                            <li class="my-2">
-                                                Signal Assessment
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="cell has-text-weight-semibold has-text-right">
-                                        <ul>
-                                            <li class="my-2">
-                                                123456789
-                                            </li>
-                                            <li class="my-2 is-clipped">
-                                                41804
-                                            </li>
-                                            <li class="my-2">
-                                                15 / 623
-                                            </li>
-                                            <li class="my-2">
-                                                150 / 61234
-                                            </li>
-                                            <li class="my-2">
-                                                515
-                                            </li>
-                                            <li class="my-2">
-                                                03
-                                            </li>
-                                            <li class="my-2">
-                                                <span class="tag is-warning has-text-white">
-                                                    Fair
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Phone Number</p>
+                  <p class="has-text-weight-bold" id="phoneNumber"></p>
                 </div>
-                <!-- Cell 4 End -->
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>IMSI</p>
+                  <p class="has-text-weight-bold" id="imsi"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>ICCID</p>
+                  <p class="has-text-weight-bold" id="iccid"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>IMEI</p>
+                  <p class="has-text-weight-bold" id="imei"></p>
+                </div>
+              </div>
             </div>
+          </div>
+          <!-- Cell 1 End -->
+
+          <!-- Cell 2 -->
+          <div class="cell">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-title">Connection</div>
+              </div>
+              <div class="card-content">
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>APN</p>
+                  <p class="has-text-weight-bold" id="apn"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Operator State</p>
+                  <p class="has-text-weight-bold" id="operatorState"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Functionality State</p>
+                  <p class="has-text-weight-bold" id="functionalityState"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Data Connection State</p>
+                  <p class="has-text-weight-bold" id="dataConnState"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Network Type</p>
+                  <p class="has-text-weight-bold" id="networkType"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Modem Temperature</p>
+                  <p class="has-text-weight-bold" id="temp"></p>
+                </div>
+
+                <div
+                  class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center my-2"
+                >
+                  <p>Access Technology</p>
+                  <p class="has-text-weight-bold" id="accessTech"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Cell 2 End -->
+
+          <!-- Cell 3 -->
+          <div class="cell">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-title">Data Transmission</div>
+              </div>
+              <div class="card-content">
+                <div class="fixed-grid has-2-cols">
+                  <div class="grid">
+                    <div class="cell has-text-left">
+                      <ul>
+                        <li class="my-2">Carrier Aggregation</li>
+                        <li class="my-2">Bandwidth</li>
+                        <li class="my-2">Connected Band</li>
+                        <li class="my-2">Signal Strength</li>
+                        <li class="my-2">Bytes Received</li>
+                        <li class="my-2">Bytes Sent</li>
+                        <li class="my-2">Uptime</li>
+                      </ul>
+                    </div>
+                    <div class="cell has-text-weight-semibold has-text-right">
+                      <ul>
+                        <li class="my-2">Multi</li>
+                        <li class="my-2 is-clipped">10 UL / 10 DL / 100 Mhz</li>
+                        <li class="my-2">B1 / N41</li>
+                        <li class="my-2">
+                          <span class="tag is-success has-text-white">
+                            65% - Excellent
+                          </span>
+                        </li>
+                        <li class="my-2">14.5 MB</li>
+                        <li class="my-2">14.5 MB</li>
+                        <li class="my-2">5 days</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Cell 3 End -->
+
+          <!-- Cell 4 -->
+          <div class="cell">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-title">Cellular Info</div>
+              </div>
+              <div class="card-content">
+                <div class="fixed-grid has-2-cols">
+                  <div class="grid">
+                    <div class="cell has-text-left">
+                      <ul>
+                        <li class="my-2">Cell ID</li>
+                        <li class="my-2">LAC</li>
+                        <li class="my-2">Physical Cell ID</li>
+                        <li class="my-2">EARFCN</li>
+                        <li class="my-2">Mobile Country Code</li>
+                        <li class="my-2">Mobile Network Code</li>
+                        <li class="my-2">Signal Assessment</li>
+                      </ul>
+                    </div>
+                    <div class="cell has-text-weight-semibold has-text-right">
+                      <ul>
+                        <li class="my-2">123456789</li>
+                        <li class="my-2 is-clipped">41804</li>
+                        <li class="my-2">15 / 623</li>
+                        <li class="my-2">150 / 61234</li>
+                        <li class="my-2">515</li>
+                        <li class="my-2">03</li>
+                        <li class="my-2">
+                          <span class="tag is-warning has-text-white">
+                            Fair
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Cell 4 End -->
         </div>
+      </div>
     </div>
     <!-- Cards End -->
 
     <!-- Bands Table Start -->
     <div class="mt-6">
-        <div class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <h3 class="title is-3">
-                        Bands
-                    </h3>
-                </div>
-                <div class="level-item">
-                    <button class="icon">
-                        <i class="fas fa-arrows-rotate has-text-link"></i>
-                    </button>
-                </div>
-            </div>
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <h3 class="title is-3">Bands</h3>
+          </div>
+          <div class="level-item">
+            <button class="icon">
+              <i class="fas fa-arrows-rotate has-text-link"></i>
+            </button>
+          </div>
         </div>
-        <table class="table is-fullwidth">
-            <thead>
-                <tr>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        EARFCN
-                    </th>
-                    <th>
-                        Bandwidth
-                    </th>
-                    <th>
-                        Physical ID
-                    </th>
-                    <th class="is-hidden-mobile">
-                        RSRP
-                    </th>
-                    <th class="is-hidden-mobile">
-                        RSRQ
-                    </th>
-                    <th class="is-hidden-mobile">
-                        SINR
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        B1
-                    </td>
-                    <td>
-                        150
-                    </td>
-                    <td>
-                        10
-                    </td>
-                    <td>
-                        623
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -103 </span>
-                            <span class="tag is-danger is-size-6 has-text-white"> Poor </span>
-                        </div>
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -103 </span>
-                            <span class="tag is-danger is-size-6 has-text-white"> Poor </span>
-                        </div>
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -5 </span>
-                            <span class="tag is-danger is-size-6 has-text-white"> Poor </span>
-                        </div>
-                    </td>
-                </tr>
+      </div>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>EARFCN</th>
+            <th>Bandwidth</th>
+            <th>Physical ID</th>
+            <th class="is-hidden-mobile">RSRP</th>
+            <th class="is-hidden-mobile">RSRQ</th>
+            <th class="is-hidden-mobile">SINR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>B1</td>
+            <td>150</td>
+            <td>10</td>
+            <td>623</td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -103 </span>
+                <span class="tag is-danger is-size-8 has-text-white">
+                  Poor
+                </span>
+              </div>
+            </td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -103 </span>
+                <span class="tag is-danger is-size-8 has-text-white">
+                  Poor
+                </span>
+              </div>
+            </td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -5 </span>
+                <span class="tag is-danger is-size-8 has-text-white">
+                  Poor
+                </span>
+              </div>
+            </td>
+          </tr>
 
-                <tr>
-                    <td>
-                        B2
-                    </td>
-                    <td>
-                        150
-                    </td>
-                    <td>
-                        10
-                    </td>
-                    <td>
-                        623
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -90 </span>
-                            <span class="tag is-warning is-size-6 has-text-white"> Medium </span>
-                        </div>
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -90 </span>
-                            <span class="tag is-warning is-size-6 has-text-white"> Medium </span>
-                        </div>
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> 10 </span>
-                            <span class="tag is-warning is-size-6 has-text-white"> Medium </span>
-                        </div>
-                    </td>
-                </tr>
+          <tr>
+            <td>B2</td>
+            <td>150</td>
+            <td>10</td>
+            <td>623</td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -90 </span>
+                <span class="tag is-warning is-size-8 has-text-white">
+                  Medium
+                </span>
+              </div>
+            </td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -90 </span>
+                <span class="tag is-warning is-size-8 has-text-white">
+                  Medium
+                </span>
+              </div>
+            </td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> 10 </span>
+                <span class="tag is-warning is-size-8 has-text-white">
+                  Medium
+                </span>
+              </div>
+            </td>
+          </tr>
 
-                <tr>
-                    <td>
-                        B3
-                    </td>
-                    <td>
-                        150
-                    </td>
-                    <td>
-                        10
-                    </td>
-                    <td>
-                        623
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -65 </span>
-                            <span class="tag is-success is-size-6 has-text-white"> Strong </span>
-                        </div>
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> -65 </span>
-                            <span class="tag is-success is-size-6 has-text-white"> Strong </span>
-                        </div>
-                    </td>
-                    <td class="is-hidden-mobile">
-                        <div class="tags has-addons">
-                            <span class="tag is-size-6"> 30 </span>
-                            <span class="tag is-success is-size-6 has-text-white"> Strong </span>
-                        </div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
+          <tr>
+            <td>B3</td>
+            <td>150</td>
+            <td>10</td>
+            <td>623</td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -65 </span>
+                <span class="tag is-success is-size-8 has-text-white">
+                  Strong
+                </span>
+              </div>
+            </td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> -65 </span>
+                <span class="tag is-success is-size-8 has-text-white">
+                  Strong
+                </span>
+              </div>
+            </td>
+            <td class="is-hidden-mobile">
+              <div class="tags has-addons">
+                <span class="tag is-size-8"> 30 </span>
+                <span class="tag is-success is-size-8 has-text-white">
+                  Strong
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <!-- Bands Table End -->
 
     <footer class="footer mt-6">
-        <div class="level">
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">
-                        WAN IPv4
-                    </p>
-                    <p class="has-text-weight-semibold">
-                        244.178.44.111
-                    </p>
-                </div>
-            </div>
-
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">
-                        WAN IPv6
-                    </p>
-                    <p class="has-text-weight-semibold">
-                        5be8:dde9:7f0b:d5a7:bd01:b3be:9c69:573b
-                    </p>
-                </div>
-            </div>
-
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">
-                        Refresh Rate
-                    </p>
-                    <div class="dropdown is-hoverable is-up">
-                        <div class="dropdown-trigger">
-                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
-                                <span>5s</span>
-                                <span class="icon is-small">
-                                    <i class="fas fa-angle-up" aria-hidden="true"></i>
-                                </span>
-                            </button>
-                        </div>
-                        <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-                            <div class="dropdown-content">
-                                <a href="#" class="dropdown-item"> 3s </a>
-                                <a href="#" class="dropdown-item"> 5s </a>
-                                <a href="#" class="dropdown-item"> 10s </a>
-                                <a href="#" class="dropdown-item"> 15s </a>
-                                <a href="#" class="dropdown-item"> 30s </a>
-                                <a href="#" class="dropdown-item"> 60s </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">
-                        Last Update
-                    </p>
-                    <p class="has-text-weight-semibold">
-                        13:30
-                    </p>
-                </div>
-            </div>
+      <div class="level">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">WAN IPv4</p>
+            <p class="has-text-weight-semibold">244.178.44.111</p>
+          </div>
         </div>
-    </footer>
-</body>
 
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">WAN IPv6</p>
+            <p class="has-text-weight-semibold">
+              5be8:dde9:7f0b:d5a7:bd01:b3be:9c69:573b
+            </p>
+          </div>
+        </div>
+
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Refresh Rate</p>
+            <div class="dropdown is-hoverable is-up">
+              <div class="dropdown-trigger">
+                <button
+                  class="button"
+                  aria-haspopup="true"
+                  aria-controls="dropdown-menu3"
+                >
+                  <span>5s</span>
+                  <span class="icon is-small">
+                    <i class="fas fa-angle-up" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                <div class="dropdown-content">
+                  <a href="#" class="dropdown-item"> 3s </a>
+                  <a href="#" class="dropdown-item"> 5s </a>
+                  <a href="#" class="dropdown-item"> 10s </a>
+                  <a href="#" class="dropdown-item"> 15s </a>
+                  <a href="#" class="dropdown-item"> 30s </a>
+                  <a href="#" class="dropdown-item"> 60s </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Last Update</p>
+            <p class="has-text-weight-semibold">13:30</p>
+          </div>
+        </div>
+      </div>
+      <textarea id="output" rows="10" cols="50" readonly></textarea>
+    </footer>
+
+    <script>
+      // Function to fetch data from the CGI script and log the JSON response
+      async function fetchATCommandData() {
+        try {
+          const response = await fetch("/cgi-bin/home_data.sh", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          // Log raw response for debugging
+          const rawData = await response.text();
+
+          // Check if the response is empty or improperly formatted
+          if (!rawData || rawData.trim() === "") {
+            throw new Error("Empty or malformed response");
+          }
+
+          // Parse the JSON from raw response
+          const jsonData = JSON.parse(rawData);
+
+          // Get the first index of the JSON array
+          const firstIndex = jsonData[0];
+          // Parse the JSON object to get the SIM slot
+          const simSlot = firstIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .trim();
+          // Set the SIM slot value in the HTML
+          document.getElementById("simSlot").textContent = simSlot;
+
+          // Get the second index of the JSON array
+          const secondIndex = jsonData[1];
+          // Parse the JSON object to get the phone number. Also remove the double quotes and commas
+          const phoneNumber = secondIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .replace(/"/g, "")
+            .replace(/,/g, "")
+            .trim();
+          // Set the phone number value in the HTML
+          document.getElementById("phoneNumber").textContent = phoneNumber;
+
+          // Get the third index of the JSON array
+          const thirdIndex = jsonData[2];
+          // Parse the JSON object to get the Sim Card Provider
+          const simProvider = thirdIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .split(",")[2]
+            .replace(/"/g, "")
+            .trim();
+          // Set the Sim Card Provider value in the HTML
+          document.getElementById("simProvider").textContent = simProvider;
+          // Parse the Access Technology
+          const accessTech = thirdIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .split(",")[3]
+            .replace(/"/g, "")
+            .trim();
+
+          switch (accessTech) {
+            case "2":
+              document.getElementById("accessTech").textContent = "UTRAN";
+              break;
+
+            case "4":
+              document.getElementById("accessTech").textContent =
+                "UTRAN W/ HSDPA";
+              break;
+
+            case "5":
+              document.getElementById("accessTech").textContent =
+                "UTRAN W/ HSUPA";
+              break;
+
+            case "6":
+              document.getElementById("accessTech").textContent =
+                "UTRAN W/ HSDPA & HSUPA";
+              break;
+
+            case "7":
+              document.getElementById("accessTech").textContent = "E-UTRAN";
+              break;
+
+            case "10":
+              document.getElementById("accessTech").textContent =
+                "E-UTRAN connected to a 5GCN";
+              break;
+
+            case "11":
+              document.getElementById("accessTech").textContent =
+                "NR connected to a 5GCN";
+              break;
+
+            case "12":
+              document.getElementById("accessTech").textContent = "NG-RAN";
+              break;
+
+            case "13":
+              document.getElementById("accessTech").textContent =
+                "E-UTRAN-NR dual connectivity";
+              break;
+
+            default:
+              document.getElementById("accessTech").textContent = "Unknown";
+              break;
+          }
+
+          // Get the fourth index of the JSON array
+          const fourthIndex = jsonData[3];
+          // Parse the JSON object to get the IMSI
+          const imsi = fourthIndex.response.split("\n")[1].trim();
+          // Set the IMSI value in the HTML
+          document.getElementById("imsi").textContent = imsi;
+
+          // Get the fifth index of the JSON array
+          const fifthIndex = jsonData[4];
+          // Parse the JSON object to get the ICCID
+          const iccid = fifthIndex.response.split("\n")[1].split(":")[1].trim();
+          // Set the ICCID value in the HTML
+          document.getElementById("iccid").textContent = iccid;
+
+          // Get the sixth index of the JSON array
+          const sixthIndex = jsonData[5];
+          // Parse the JSON object to get the IMEI
+          const imei = sixthIndex.response.split("\n")[1].trim();
+          // Set the IMEI value in the HTML
+          document.getElementById("imei").textContent = imei;
+
+          // Get the seventh index of the JSON array
+          const seventhIndex = jsonData[6];
+          // Parse the JSON object to get the SIM state
+          const simState = seventhIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .trim();
+          if (simState === "READY") {
+            const simStateElement = document.createElement("span");
+            simStateElement.classList.add(
+              "tag",
+              "is-success",
+              "has-text-white"
+            );
+            simStateElement.textContent = "Inserted";
+            document.getElementById("simState").appendChild(simStateElement);
+          } else {
+            const simStateElement = document.createElement("span");
+            simStateElement.classList.add("tag", "is-danger", "has-text-white");
+            simStateElement.textContent = "Missing!";
+            document.getElementById("simState").appendChild(simStateElement);
+          }
+
+          // Get the eighth index of the JSON array
+          const eighthIndex = jsonData[7];
+          // Parse the JSON object to get the APN
+          const apn = eighthIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .split(",")[2]
+            .replace(/"/g, "")
+            .trim();
+          // Set the APN value in the HTML
+          document.getElementById("apn").textContent = apn;
+
+          // Get the ninth index of the JSON array
+          const ninthIndex = jsonData[8];
+          // Parse the JSON object to get the Operator State
+          const operatorState = ninthIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .split(",")[1]
+            .trim();
+          // Set the Operator State value in the HTML
+          if (operatorState === "0") {
+            const operatorStateElement = document.createElement("span");
+            operatorStateElement.classList.add(
+              "tag",
+              "is-danger",
+              "has-text-white"
+            );
+            operatorStateElement.textContent = "Not Registered";
+            document
+              .getElementById("operatorState")
+              .appendChild(operatorStateElement);
+          }
+          if (operatorState === "1") {
+            const operatorStateElement = document.createElement("span");
+            operatorStateElement.classList.add(
+              "tag",
+              "is-success",
+              "has-text-white"
+            );
+            operatorStateElement.textContent = "Registered";
+            document
+              .getElementById("operatorState")
+              .appendChild(operatorStateElement);
+          }
+          if (operatorState === "2") {
+            const operatorStateElement = document.createElement("span");
+            operatorStateElement.classList.add(
+              "tag",
+              "is-warning",
+              "has-text-white"
+            );
+            operatorStateElement.textContent = "Searching";
+            document
+              .getElementById("operatorState")
+              .appendChild(operatorStateElement);
+          }
+          if (operatorState === "3") {
+            const operatorStateElement = document.createElement("span");
+            operatorStateElement.classList.add(
+              "tag",
+              "is-danger",
+              "has-text-white"
+            );
+            operatorStateElement.textContent = "Denied";
+            document
+              .getElementById("operatorState")
+              .appendChild(operatorStateElement);
+          }
+          if (operatorState === "4") {
+            const operatorStateElement = document.createElement("span");
+            operatorStateElement.classList.add(
+              "tag",
+              "is-warning",
+              "has-text-white"
+            );
+            operatorStateElement.textContent = "Unknown";
+            document
+              .getElementById("operatorState")
+              .appendChild(operatorStateElement);
+          }
+          if (operatorState === "5") {
+            const operatorStateElement = document.createElement("span");
+            operatorStateElement.classList.add(
+              "tag",
+              "is-success",
+              "has-text-white"
+            );
+            operatorStateElement.textContent = "Roaming";
+            document
+              .getElementById("operatorState")
+              .appendChild(operatorStateElement);
+          }
+
+          // Get the tenth index of the JSON array
+          const tenthIndex = jsonData[9];
+          // Parse the JSON object to get the Functionality State
+          const functionalityState = tenthIndex.response
+            .split("\n")[1]
+            .split(":")[1]
+            .trim();
+
+          if (functionalityState === "1") {
+            const functionalityStateElement = document.createElement("span");
+            functionalityStateElement.classList.add(
+              "tag",
+              "is-success",
+              "has-text-white"
+            );
+            functionalityStateElement.textContent = "Enabled";
+            document
+              .getElementById("functionalityState")
+              .appendChild(functionalityStateElement);
+          } else {
+            const functionalityStateElement = document.createElement("span");
+            functionalityStateElement.classList.add(
+              "tag",
+              "is-danger",
+              "has-text-white"
+            );
+            functionalityStateElement.textContent = "Disabled";
+            document
+              .getElementById("functionalityState")
+              .appendChild(functionalityStateElement);
+          }
+
+          // Get the eleventh index of the JSON array
+          const eleventhIndex = jsonData[10];
+          // Parse the JSON object to get the Network Type
+          const servingCell = eleventhIndex.response;
+
+          // Check if servingCell contains
+          if (servingCell.includes("LTE")) {
+            if (servingCell.includes("NR5G-NSA")) {
+              document.getElementById("networkType").textContent = "NR5G-NSA";
+            } else if (servingCell.includes("LTE")) {
+              document.getElementById("networkType").textContent = "LTE";
+            }
+          } else if (servingCell.includes("NR5G-SA")) {
+            document.getElementById("networkType").textContent = "NR5G-SA";
+          } else {
+            document.getElementById("networkType").textContent =
+              "Unknown / No Signal";
+          }
+
+          // Get the twelfth index of the JSON array
+          const twelfthIndex = jsonData[11];
+          // Parse the JSON object to get the Modem Temperature
+          // Get the line that contains "cpuss-0"
+          const cpu0 = twelfthIndex.response
+            .split("\n")
+            .find((line) => line.includes("cpuss-0"))
+            .split(":")[1]
+            .split(",")[1]
+            .replace(/"/g, "")
+            .trim();
+
+          // Get the line that contains "cpuss-1"
+          const cpu1 = twelfthIndex.response
+            .split("\n")
+            .find((line) => line.includes("cpuss-1"))
+            .split(":")[1]
+            .split(",")[1]
+            .replace(/"/g, "")
+            .trim();
+
+          // Get the line that contains "cpuss-2"
+          const cpu2 = twelfthIndex.response
+            .split("\n")
+            .find((line) => line.includes("cpuss-2"))
+            .split(":")[1]
+            .split(",")[1]
+            .replace(/"/g, "")
+            .trim();
+
+          // Get the line that contains "cpuss-3"
+          const cpu3 = twelfthIndex.response
+            .split("\n")
+            .find((line) => line.includes("cpuss-3"))
+            .split(":")[1]
+            .split(",")[1]
+            .replace(/"/g, "")
+            .trim();
+
+          // Calculate the average temperature
+          const temp =
+            (parseInt(cpu0) +
+              parseInt(cpu1) +
+              parseInt(cpu2) +
+              parseInt(cpu3)) /
+            4;
+          // Set the Modem Temperature value in the HTML
+          document.getElementById("temp").textContent = temp + "°C";
+        } catch (error) {
+          console.error("There was a problem with the fetch operation:", error);
+        }
+      }
+
+      // Function for fetching data from /cgi-bin/check_net.sh that will return either ACTIVE or INACTIVE
+      async function fetchConnectionStatus() {
+        try {
+          const response = await fetch("/cgi-bin/check_net.sh", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          // Log raw response for debugging
+          const rawData = await response.text();
+
+          // Check if the response is empty or improperly formatted
+          if (!rawData || rawData.trim() === "") {
+            throw new Error("Empty or malformed response");
+          }
+
+          // Parse the JSON from raw response
+          const jsonData = JSON.parse(rawData);
+
+          // If the response is ACTIVE, set the Data Connection State to "Connected"
+          if (jsonData.response === "ACTIVE") {
+            const dataConnStateElement = document.createElement("span");
+            dataConnStateElement.classList.add("tag", "is-success", "has-text-white");
+            dataConnStateElement.textContent = "Connected";
+            document.getElementById("dataConnState").appendChild(dataConnStateElement);
+          } else {
+            // If the response is INACTIVE, set the Data Connection State to "Disconnected"
+            const dataConnStateElement = document.createElement("span");
+            dataConnStateElement.classList.add("tag", "is-danger", "has-text-white");
+            dataConnStateElement.textContent = "Disconnected";
+            document.getElementById("dataConnState").appendChild(dataConnStateElement);
+          }
+
+        } catch (error) {
+          console.error("There was a problem with the fetch operation:", error);
+        }
+      }
+
+      // Event listener for page load
+      document.addEventListener("DOMContentLoaded", () => {
+        // Fetch the AT command data on page load
+        fetchATCommandData();
+        // Fetch the connection status on page load
+        fetchConnectionStatus();
+      });
+
+      // Event listener for the refresh button
+      function handleRefreshClick() {
+        // Fetch the AT command data on button click
+        fetchATCommandData();
+        // Fetch the connection status on button click
+        fetchConnectionStatus();
+      }
+    </script>
+  </body>
 </html>

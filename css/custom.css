@@ -1,5 +1,13 @@
 /*  */
 
+/* import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Euclid+Flex:wght@400;500;600;700&display=swap');
+
+/* use Poppins everywhere */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
 html {
   visibility: hidden;
 }
@@ -27,12 +35,7 @@ html.theme-light {
   border: 0;
 }
 
-/* .font-is-semibold {
-    font-weight: 600;
-} */
-
-/* .content-end {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-} */
+.cell {
+  display: grid;
+  height: 100%;
+}

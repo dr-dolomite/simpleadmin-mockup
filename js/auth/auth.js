@@ -1,93 +1,108 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Function to generate a random token
-    function generateAuthToken(length = 32) {
-        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let token = '';
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            token += charset[randomIndex];
-        }
-        return token;
+document.addEventListener("DOMContentLoaded", () => {
+  // Function to generate a random token
+  function generateAuthToken(length = 32) {
+    const charset =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let token = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      token += charset[randomIndex];
     }
+    return token;
+  }
 
-    // Initially hide the body to prevent content from flashing
-    document.body.style.display = 'none';
+  // Initially hide the body to prevent content from flashing
+  document.body.style.display = "none";
 
-    // Check if the user is already logged in
-    const authToken = localStorage.getItem('authToken');
-    
-    // Define which pages should be protected
-    const protectedPages = [
-        '/home.html',
-        'advance-settings.html',
-        '/bandlock.html',
-        '/cell-locking.html',
-        '/cell-scanner.html',
-        '/cell-settings.html',
-        '/cell-sms.html',
-        '/about.html',      // Add all the protected HTML pages here
-    ];
+  // Check if the user is already logged in
+  const authToken = localStorage.getItem("authToken");
 
-    const currentPage = window.location.pathname;
+  // Define which pages should be protected
+  const protectedPages = [
+    "/home.html",
+    "advance-settings.html",
+    "/bandlock.html",
+    "/cell-locking.html",
+    "/cell-scanner.html",
+    "/cell-settings.html",
+    "/cell-sms.html",
+    "/about.html", // Add all the protected HTML pages here
+  ];
 
-    // If the user is not logged in and tries to access a protected page, redirect to login
-    if (!authToken && protectedPages.includes(currentPage)) {
-        window.location.href = 'index.html';
-    } else {
-        // Show the page if authentication is successful or not required
-        document.body.style.display = '';
-    }
+  const currentPage = window.location.pathname;
 
-    // If the user is logged in and tries to access the login page, redirect to home
-    if (authToken && currentPage.includes('index.html')) {
-        window.location.href = 'home.html';
-    }
+  // If the user is not logged in and tries to access a protected page, redirect to login
+  if (!authToken && protectedPages.includes(currentPage)) {
+    window.location.href = "index.html";
+  } else {
+    // Show the page if authentication is successful or not required
+    document.body.style.display = "";
+  }
 
-    // Login form logic (only for login page)
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+  // If the user is logged in and tries to access the login page, redirect to home
+  if (authToken && currentPage.includes("index.html")) {
+    window.location.href = "home.html";
+  }
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorElement = document.getElementById('error');
+  // Login form logic (only for login page)
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-            const validUsername = 'admin'; // Hardcoded credentials for demo purposes
-            const validPassword = 'password123';
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorElement = document.getElementById("error");
 
-            // Authenticate user
-            if (username === validUsername && password === validPassword) {
-                // Generate a random token
-                const newToken = generateAuthToken();
-                localStorage.setItem('authToken', newToken); // Store the generated token
+      try {
+        const formData = new URLSearchParams();
+        formData.append("username", username);
+        formData.append("password", encodeURIComponent(password)); // URL-encode the password
 
-                // Redirect to home after successful login
-                window.location.href = 'home.html';
-            } else {
-                errorElement.textContent = 'Invalid username or password';
-            }
+        const response = await fetch("/cgi-bin/auth.sh", {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         });
-    }
 
-    // Logout button logic (only for pages that have the logout button)
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            localStorage.removeItem('authToken'); // Remove token
-            window.location.href = 'index.html';  // Redirect to login
-        });
-    }
+        const result = await response.json(); // Parse JSON response
 
-    // Fix for the issue of being redirected to login every time the Home button is clicked
-    document.querySelectorAll('.navbar-item').forEach(el => {
-        if (el.textContent.includes('Home')) {
-            el.addEventListener('click', e => {
-                if (localStorage.getItem('authToken')) {
-                    e.preventDefault();
-                    window.location.href = 'home.html';
-                }
-            });
+        if (result.state === "success") {
+          const newToken = generateAuthToken();
+          localStorage.setItem("authToken", newToken); // Store the token
+          window.location.href = "home.html"; // Redirect on success
+        } else {
+          document.getElementById("error").textContent =
+            "Invalid username or password";
+          console.log("Invalid username or password");
         }
+      } catch (error) {
+        // Handle any errors (e.g., network issues)
+        errorElement.textContent = "An error occurred. Please try again later.";
+      }
     });
+  }
+
+  // Logout button logic (only for pages that have the logout button)
+  const logoutButton = document.getElementById("logoutButton");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      localStorage.removeItem("authToken"); // Remove token
+      window.location.href = "index.html"; // Redirect to login
+    });
+  }
+
+  // Fix for the issue of being redirected to login every time the Home button is clicked
+  document.querySelectorAll(".navbar-item").forEach((el) => {
+    if (el.textContent.includes("Home")) {
+      el.addEventListener("click", (e) => {
+        if (localStorage.getItem("authToken")) {
+          e.preventDefault();
+          window.location.href = "home.html";
+        }
+      });
+    }
+  });
 });
