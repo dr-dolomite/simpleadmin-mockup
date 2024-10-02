@@ -4,6 +4,13 @@
 echo "Content-type: application/json"
 echo ""
 
+# Define the lock file
+LOCK_FILE="/tmp/home_data.lock"
+
+# Acquire the lock (wait if needed)
+exec 200>$LOCK_FILE
+flock -x 200
+
 # Temporary files for input/output and AT port
 INPUT_FILE="/tmp/input_$$.txt"
 OUTPUT_FILE="/tmp/output_$$.txt"
@@ -22,7 +29,7 @@ escape_json() {
 JSON_RESPONSE="["
 
 # List of AT commands to run, one by one
-for COMMAND in "AT+QUIMSLOT?" "AT+CNUM" "AT+COPS?" "AT+CIMI" "AT+ICCID" "AT+CGSN" "AT+CPIN?" "AT+CGCONTRDP" "AT+CREG?" "AT+CFUN?" "AT+QENG=\"servingcell\"" "AT+QTEMP" "AT+CGCONTRDP" "AT+QCAINFO"; do
+for COMMAND in "AT+QUIMSLOT?" "AT+CNUM" "AT+COPS?" "AT+CIMI" "AT+ICCID" "AT+CGSN" "AT+CPIN?" "AT+CGCONTRDP" "AT+CREG?" "AT+CFUN?" "AT+QENG=\"servingcell\"" "AT+QTEMP" "AT+CGCONTRDP" "AT+QCAINFO" "AT+QRSRP" 'AT+QMAP="WWAN"'; do
     # Write the command to the input file
     echo "$COMMAND" > "$INPUT_FILE"
 
@@ -54,3 +61,6 @@ echo "$JSON_RESPONSE"
 
 # Clean up temporary files
 rm "$INPUT_FILE" "$OUTPUT_FILE"
+
+# Release the lock
+flock -u 200

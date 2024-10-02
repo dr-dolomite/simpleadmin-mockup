@@ -39,3 +39,29 @@ html.theme-light {
   display: grid;
   height: 100%;
 }
+
+#handleRefreshClickButton {
+  cursor: pointer;
+}
+
+#handleRefreshClickButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.fa-spin {
+  animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#dataConnState .tag {
+  transition: all 0.3s ease-in-out;
+}

@@ -1,64 +1,39 @@
-# simpleadmin-mockup
 
-```
-mkdir /www/custom-ui
-```
+# QuecManager FrontEnd for RM551E
 
-then paste all of the files inside of this folder into /www/custom-ui.
-
-go to /etc/config and edit uhttpd into this:
-```
-config uhttpd 'main'
-        list listen_http '0.0.0.0:80'
-        list listen_http '[::]:80'
-        list listen_https '0.0.0.0:443'
-        list listen_https '[::]:443'
-        option redirect_https '0'
-        option home '/www'
-        option rfc1918_filter '1'
-        option max_requests '3'
-        option max_connections '100'
-        option cert '/etc/uhttpd.crt'
-        option key '/etc/uhttpd.key'
-        option cgi_prefix '/cgi-bin'
-        list lua_prefix '/cgi-bin/luci=/usr/lib/lua/luci/sgi/uhttpd.lua'
-        option script_timeout '60'
-        option network_timeout '30'
-        option http_keepalive '20'
-        option tcp_keepalive '1'
-        option ubus_prefix '/ubus'
-
-config uhttpd 'my_custom_ui'
-    list listen_http '0.0.0.0:8080'   # Listen on all interfaces on port 8080
-    option home '/www/custom-ui'      # The directory where your custom UI (index.html) is located
-    option rfc1918_filter '1'
-    option max_requests '3'
-    option max_connections '100'
-    option tcp_keepalive '1'
-    option ubus_prefix '/ubus'
-    option cgi_prefix '/cgi-bin'
-    option script_timeout '60'
+Simple Admin began as part of the RGMII toolkit, offering users a basic GUI.
+                                    However, with our fork and continued development, it has evolved to include more
+                                    advanced features, making "simple" no longer an ideal name for the dashboard.
+                                    Despite this shift, we remain committed to providing advanced functionality while
+                                    maintaining an intuitive and user-friendly GUI.
 
 
-config cert 'defaults'
-        option days '730'
-        option key_type 'ec'
-        option bits '2048'
-        option ec_curve 'P-256'
-        option country 'ZZ'
-        option state 'Somewhere'
-        option location 'Unknown'
-        option commonname 'OpenWrt'
+## Installation
+
+Install QuecManager via
+```bash
+access the filesystem via ftp or WinSCP
+merge all the files except README to /www
 ```
 
-then restart uhttpd
+Make sure to make all the scripts executable
+```bash
+cd /www/cgi-bin
+chmod +x ./*
 ```
-/etc/init.d/uhttpd restart
+
+If this doesn't work, try to chmod each script.
+
+
+## Usage/Examples
+
+```bash
+go to your browser and type: https://192.168.224.1
 ```
 
-try if the custom AT command works by going to:
-http://192.168.224.1:8080
 
-login with admin/password123
+## Demo
 
-then click Advanced
+Only the **Home** page works for now.
+
+Custom AT command works but it needs its own cgi-script to use smd7 port. Therefore, expect possible problems with the current version.
