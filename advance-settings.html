@@ -22,7 +22,6 @@
     <script src="js/styles/nav-burger.js"></script>
     <script src="js/styles/toggle-theme.js"></script>
     <script defer src="/js/auth/auth.js"></script>
-    <script src="/js/handle-at-input.js"></script>
 
     <script>
       (function () {
@@ -70,7 +69,12 @@
               <a class="navbar-item" href="/cell-sms.html"> Cell SMS </a>
             </div>
           </div>
-          <a class="navbar-item has-text-weight-bold" href="/advance-settings.html"> Advance </a>
+          <a
+            class="navbar-item has-text-weight-bold"
+            href="/advance-settings.html"
+          >
+            Advance
+          </a>
           <a class="navbar-item" href="/about.html"> About </a>
         </div>
 
@@ -125,70 +129,305 @@
     </nav>
 
     <div class="column-margin">
-      <div class="fixed-grid has-2-cols has-1-cols-mobile">
-        <div class="grid">
-          <div class="cell">
-            <div class="card">
+      <div class="columns">
+        <div class="column">
+          <div class="card">
+            <div class="card-header">
+              <p class="card-header-title">AT Command Terminal</p>
+            </div>
+            <div class="card-content">
               <form id="commandForm">
-                <div class="card-header">
-                  <div class="card-header-title">AT command Terminal</div>
+                <div class="field">
+                  <label class="label">Output</label>
+                  <div class="control">
+                    <textarea
+                      class="textarea"
+                      id="output"
+                      rows="10"
+                      readonly
+                      placeholder="AT command responses will appear here..."
+                    ></textarea>
+                  </div>
                 </div>
-                <div class="card-content">
-                  <div class="fixed-grid has-1-cols">
-                    <div class="grid is-gap-5">
-                      <div class="cell">
-                        <div class="field">
-                          <label class="label">AT Command</label>
-                          <div class="control">
-                            <textarea
-                              class="textarea"
-                              id="output"
-                              placeholder="AT Response"
-                              rows="10"
-                              disabled
-                            ></textarea>
+
+                <div class="field">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <label class="label">Command History</label>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <button
+                          type="button"
+                          id="clearHistory"
+                          class="button is-small is-light"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="command-history" id="commandHistory">
+                    <div class="no-history" id="noHistory">No commands yet</div>
+                  </div>
+                </div>
+
+                <div class="field has-addons">
+                  <div class="control is-expanded">
+                    <input
+                      class="input"
+                      type="text"
+                      id="command"
+                      placeholder="Enter AT command (e.g., ATI)"
+                      autocomplete="off"
+                    />
+                  </div>
+                  <div class="control" style="position: relative">
+                    <button
+                      type="submit"
+                      class="button is-link"
+                      id="sendButton"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-paper-plane"></i>
+                      </span>
+                      <span>Send</span>
+                    </button>
+                    <span id="cooldownTimer"></span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-title">Advance Settings</div>
+            </div>
+            <div class="card-content">
+              <div class="fixed-grid has-1-cols">
+                <div class="grid is-gap-5">
+                  <div class="cell">
+                    <div class="fixed-grid has-2-cols has-1-cols-mobile">
+                      <div class="grid">
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">IP Passthrough Mode</label>
+                            <p class="control has-icons-left">
+                              <span class="select">
+                                <select>
+                                  <option selected>
+                                    Select IP Passthrough Mode
+                                  </option>
+                                  <option>Disable</option>
+                                  <option>ETH Only</option>
+                                  <option>USB Only</option>
+                                </select>
+                              </span>
+                              <span class="icon is-small is-left">
+                                <i class="fas fa-ethernet"></i>
+                              </span>
+                            </p>
+                            <p class="help">
+                              Selecting a mode will apply immediately.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">USB Modem Protocol</label>
+                            <p class="control has-icons-left">
+                              <span class="select">
+                                <select>
+                                  <option selected>
+                                    Select USB Modem Protocol
+                                  </option>
+                                  <option>RMNET</option>
+                                  <option>ECM (Recommended)</option>
+                                  <option>MBIM</option>
+                                  <option>RNDIS</option>
+                                </select>
+                              </span>
+                              <span class="icon is-small is-left">
+                                <i class="fas fa-network-wired"></i>
+                              </span>
+                            </p>
+                            <p class="help">
+                              Selecting a mode will apply immediately.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">Onboard DNS Proxy Mode</label>
+                            <p class="control has-icons-left">
+                              <span class="select">
+                                <select>
+                                  <option selected>
+                                    Select Onboard DNS Proxy
+                                  </option>
+                                  <option>Enable</option>
+                                  <option>Disable</option>
+                                </select>
+                              </span>
+                              <span class="icon is-small is-left">
+                                <i class="fas fa-server"></i>
+                              </span>
+                            </p>
+                            <p class="help">
+                              Selecting a mode will apply immediately.
+                            </p>
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
 
-                      <div class="cell">
-                        <div class="field">
-                          <label class="label">Input AT Command</label>
-                          <div class="control">
-                            <input
-                              class="input"
-                              type="text"
-                              placeholder="ATI"
-                              id="command"
-                              name="command"
-                            />
+                  <div class="cell">
+                    <div class="fixed-grid has-2-cols">
+                      <div class="grid is-gap-3">
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">TTL State</label>
+                            <div class="control has-icons-right">
+                              <input
+                                class="input is-danger"
+                                placeholder="Disabled"
+                                disabled
+                              />
+                              <span class="icon is-small is-right">
+                                <i class="fas fa-exclamation-triangle"></i>
+                              </span>
+                            </div>
                           </div>
-                          <p class="help">
-                            Some commands may take time to execute so wait
-                            patiently.
-                          </p>
+                        </div>
+
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">TTL Value</label>
+                            <div class="control has-icons-right">
+                              <input
+                                class="input is-danger"
+                                placeholder="0"
+                                disabled
+                              />
+                              <span class="icon is-small is-right">
+                                <i class="fas fa-exclamation-triangle"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="cell is-col-span-2">
+                          <div class="field">
+                            <label class="label">TTL Value to Set</label>
+                            <div class="control has-icons-left">
+                              <input
+                                class="input"
+                                type="number"
+                                placeholder="Custom TTL Value"
+                                value="bulma"
+                              />
+                              <span class="icon is-small is-left">
+                                <i class="fas fa-wifi"></i>
+                              </span>
+                            </div>
+                            <p class="help is-success has-text-weight-semibold">
+                              Set the TTL Value to 0 to disable.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="card-footer">
-                  <a
-                    href="#"
-                    class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
-                    id="sendCommand"
-                  >
-                    Send AT Command
-                  </a>
-                  <a
-                    href="#"
-                    class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
-                    id="resetForm"
-                  >
-                    Reset
-                  </a>
-                </div>
-              </form>
+              </div>
+            </div>
+            <div class="card-footer">
+              <a
+                href="#"
+                class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
+              >
+                Save
+              </a>
+              <a
+                href="#"
+                class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
+              >
+                Reset
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="fixed-grid has-2-cols has-1-cols-mobile">
+        <div class="grid">
+          <div class="cell">
+            <div class="card">
+              <div class="card-header">
+                <p class="card-header-title">AT Command Terminal</p>
+              </div>
+              <div class="card-content">
+                <form id="commandForm">
+                  <div class="field">
+                    <label class="label">Output</label>
+                    <div class="control">
+                      <textarea 
+                        class="textarea" 
+                        id="output" 
+                        rows="10" 
+                        readonly 
+                        placeholder="AT command responses will appear here..."></textarea>
+                    </div>
+                  </div>
+                  
+                  <div class="field">
+                    <div class="level">
+                      <div class="level-left">
+                        <div class="level-item">
+                          <label class="label">Command History</label>
+                        </div>
+                      </div>
+                      <div class="level-right">
+                        <div class="level-item">
+                          <button type="button" id="clearHistory" class="button is-small is-light">
+                            Clear All
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="command-history" id="commandHistory">
+                      <div class="no-history" id="noHistory">No commands yet</div>
+                    </div>
+                  </div>
+    
+                  <div class="field has-addons">
+                    <div class="control is-expanded">
+                      <input 
+                        class="input" 
+                        type="text" 
+                        id="command" 
+                        placeholder="Enter AT command (e.g., ATI)"
+                        autocomplete="off">
+                    </div>
+                    <div class="control" style="position: relative;">
+                      <button type="submit" class="button is-link" id="sendButton">
+                        <span class="icon">
+                          <i class="fas fa-paper-plane"></i>
+                        </span>
+                        <span>Send</span>
+                      </button>
+                      <span id="cooldownTimer"></span>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
 
@@ -359,7 +598,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <footer class="footer">
@@ -397,51 +636,141 @@
       </div>
     </footer>
     <script>
-      // Handle form submission via JavaScript
-      document
-        .getElementById("sendCommand")
-        .addEventListener("click", function (e) {
-          e.preventDefault(); // Prevent default link behavior
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("commandForm");
+        const output = document.getElementById("output");
+        const commandInput = document.getElementById("command");
+        const sendButton = document.getElementById("sendButton");
+        const commandHistory = document.getElementById("commandHistory");
+        const noHistory = document.getElementById("noHistory");
+        const clearHistoryButton = document.getElementById("clearHistory");
+        const cooldownTimer = document.getElementById("cooldownTimer");
 
-          const commandInput = document.getElementById("command").value;
-          const outputTextarea = document.getElementById("output");
+        const COOLDOWN_DURATION = 1000; // 1 second cooldown
+        let isLoading = false;
+        let cooldownActive = false;
 
-          // Make sure input is not empty
-          if (commandInput.trim() === "") {
-            outputTextarea.value = "Please enter a valid AT command.";
+        function setLoading(loading) {
+          isLoading = loading;
+          sendButton.classList.toggle("is-loading", loading);
+          form.classList.toggle("loading", loading);
+        }
+
+        function setCooldown() {
+          cooldownActive = true;
+          sendButton.classList.add("cooldown");
+          let timeLeft = COOLDOWN_DURATION;
+
+          function updateTimer() {
+            timeLeft -= 100;
+            if (timeLeft <= 0) {
+              cooldownActive = false;
+              sendButton.classList.remove("cooldown");
+              cooldownTimer.textContent = "";
+              return;
+            }
+            cooldownTimer.textContent = `${(timeLeft / 1000).toFixed(1)}s`;
+            setTimeout(updateTimer, 100);
+          }
+
+          updateTimer();
+        }
+
+        function updateHistoryVisibility() {
+          const hasHistoryItems =
+            commandHistory.querySelectorAll(".history-item").length > 0;
+          noHistory.style.display = hasHistoryItems ? "none" : "block";
+          clearHistoryButton.style.display = hasHistoryItems ? "block" : "none";
+        }
+
+        function addToHistory(command, response) {
+          const historyItem = document.createElement("div");
+          historyItem.className = "box mb-2 history-item";
+          historyItem.innerHTML = `
+            <button class="delete delete-history" aria-label="delete"></button>
+            <strong class="command-text">${command}</strong>
+            <pre style="margin-top: 0.5rem; font-size: 0.85em; white-space: pre-wrap;">${response}</pre>
+          `;
+
+          historyItem
+            .querySelector(".command-text")
+            .addEventListener("click", () => {
+              commandInput.value = command;
+              commandInput.focus();
+            });
+
+          historyItem
+            .querySelector(".delete-history")
+            .addEventListener("click", (e) => {
+              e.stopPropagation();
+              historyItem.classList.add("fade-out");
+              setTimeout(() => {
+                historyItem.remove();
+                updateHistoryVisibility();
+              }, 300);
+            });
+
+          commandHistory.insertBefore(historyItem, commandHistory.firstChild);
+          updateHistoryVisibility();
+        }
+
+        clearHistoryButton.addEventListener("click", () => {
+          const historyItems = commandHistory.querySelectorAll(".history-item");
+          historyItems.forEach((item) => {
+            item.classList.add("fade-out");
+          });
+          setTimeout(() => {
+            commandHistory.innerHTML = "";
+            commandHistory.appendChild(noHistory);
+            updateHistoryVisibility();
+          }, 300);
+        });
+
+        async function sendCommand(command) {
+          try {
+            setLoading(true);
+            const response = await fetch("/cgi-bin/atinout_handler.sh", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: `command=${encodeURIComponent(command)}`,
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            output.value = data.output || "No response received";
+            addToHistory(command, data.output || "No response received");
+            setCooldown();
+          } catch (error) {
+            const errorMessage = `Error: ${error.message}\n\nTroubleshooting steps:\n1. Check if the device is connected\n2. Verify AT port settings\n3. Ensure atinout utility is installed`;
+            output.value = errorMessage;
+            addToHistory(command, errorMessage);
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          if (isLoading || cooldownActive) return;
+
+          const command = commandInput.value.trim();
+          if (!command) {
+            output.value = "Please enter a command";
             return;
           }
 
-          // Send the AT command to the CGI script via fetch
-          fetch("/cgi-bin/atinout_handler.sh", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: `command=${encodeURIComponent(commandInput)}`,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              // Display the response in the textarea
-              if (data.output) {
-                outputTextarea.value = data.output;
-              } else {
-                outputTextarea.value = "Error: No output received.";
-              }
-            })
-            .catch((error) => {
-              outputTextarea.value = `Error fetching data: ${error.message}`;
-            });
+          await sendCommand(command);
+          commandInput.value = "";
         });
 
-      // Reset form functionality
-      document
-        .getElementById("resetForm")
-        .addEventListener("click", function (e) {
-          e.preventDefault();
-          document.getElementById("commandForm").reset();
-          document.getElementById("output").value = "";
-        });
+        // Initialize visibility
+        updateHistoryVisibility();
+      });
     </script>
   </body>
 </html>
