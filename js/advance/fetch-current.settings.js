@@ -220,8 +220,8 @@ const eventHandlers = {
     if (selectedMode !== currentMode) {
       const commands = {
         "Disabled": 'AT+QMPDN="MPDN_rule",0;+CFUN=1,1',
-        "ETH Only": `AT+QMPDN="MPDN_rule",0,1,0,1,1,"${selectedDeviceMAC}"`,
-        "USB Only": `AT+QMPDN="MPDN_rule",0,1,0,3,1,"${selectedDeviceMAC}"`
+        "ETH Only": `AT+QMPDN="MPDN_rule",0,1,0,1,1,"${selectedDeviceMAC}";+CFUN=1,1`,
+        "USB Only": `AT+QMPDN="MPDN_rule",0,1,0,3,1,"${selectedDeviceMAC}";+CFUN=1,1`
       };
 
       const command = commands[selectedMode];
