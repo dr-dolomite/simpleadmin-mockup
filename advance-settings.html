@@ -26,6 +26,8 @@
     <script src="/js/utils/restart-connection.js"></script>
     <script defer src="/js/auth/auth.js"></script>
     <script src="/js/advance/at-terminal.js"></script>
+    <script src="/js/advance/ttl-control.js"></script>
+    <script src="/js/advance/fetch-current.settings.js"></script>
 
     <script>
       (function () {
@@ -300,7 +302,7 @@
                     </div>
                   </div>
 
-                  <div class="cell">
+                  <!-- <div class="cell">
                     <div class="fixed-grid has-2-cols">
                       <div class="grid is-gap-3">
                         <div class="cell">
@@ -356,19 +358,82 @@
                         </div>
                       </div>
                     </div>
+                  </div> -->
+                  <div class="cell">
+                    <div class="fixed-grid has-2-cols">
+                      <div class="grid is-gap-3">
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">TTL State</label>
+                            <div class="control has-icons-right">
+                              <input
+                                id="ttl-state"
+                                class="input is-warning has-text-weight-bold"
+                                placeholder="Disabled"
+                                disabled
+                              />
+                              <span class="icon is-small is-right">
+                                <i class="fas fa-exclamation-triangle has-text-warning"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                  
+                        <div class="cell">
+                          <div class="field">
+                            <label class="label">Current TTL Value</label>
+                            <div class="control has-icons-right">
+                              <input
+                                id="ttl-current-value"
+                                class="input is-warning has-text-weight-bold has-text-white"
+                                placeholder="0"
+                                disabled
+                              />
+                              <span class="icon is-small is-right">
+                                <i class="fas fa-exclamation-triangle has-text-warning"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="cell is-col-span-2">
+                          <div class="field">
+                            <label class="label">TTL Value to Set</label>
+                            <div class="control has-icons-left">
+                              <input
+                                id="ttl-set-value"
+                                class="input"
+                                type="number"
+                                placeholder="Custom TTL Value"
+                              />
+                              <span class="icon is-small is-left">
+                                <i class="fas fa-wifi"></i>
+                              </span>
+                            </div>
+                            <p class="help is-success has-text-weight-semibold">
+                              Set the TTL Value to 0 to disable.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="card-footer">
               <a
-                href="#"
+                id="ttl-submit"
                 class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
               >
-                Save
+                Apply TTL Settings
               </a>
               <a
-                href="#"
+                class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
+              >
+                Save Advance Setting
+              </a>
+              <a
                 class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
               >
                 Reset
