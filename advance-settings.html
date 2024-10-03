@@ -227,27 +227,57 @@
                   <div class="cell">
                     <div class="fixed-grid has-2-cols has-1-cols-mobile">
                       <div class="grid">
-                        <div class="cell">
-                          <div class="field">
-                            <label class="label">IP Passthrough Mode</label>
-                            <p class="control has-icons-left">
-                              <span class="select">
-                                <select>
-                                  <option selected>
-                                    Select IP Passthrough Mode
-                                  </option>
-                                  <option>Disable</option>
-                                  <option>ETH Only</option>
-                                  <option>USB Only</option>
-                                </select>
-                              </span>
-                              <span class="icon is-small is-left">
-                                <i class="fas fa-ethernet"></i>
-                              </span>
-                            </p>
-                            <p class="help">
-                              Selecting a mode will apply immediately.
-                            </p>
+                        <div class="cell is-col-span-2 is-col-span-1-mobile">
+                          <div class="columns">
+                            <div class="column">
+                              <div class="field">
+                                <label class="label">IP Passthrough Mode</label>
+                                <p class="control has-icons-left">
+                                  <span class="select">
+                                    <select id="ip-passthrough-mode">
+                                      <option selected>
+                                        Select IP Passthrough Mode
+                                      </option>
+                                      <option value="Disabled">Disabled</option>
+                                      <option value="ETH Only">ETH Only</option>
+                                      <option value="USB Only">USB Only</option>
+                                    </select>
+                                  </span>
+                                  <span class="icon is-small is-left">
+                                    <i class="fas fa-ethernet"></i>
+                                  </span>
+                                </p>
+                                <p class="help">
+                                  Selecting a mode will apply immediately.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div class="column">
+                              <div class="field">
+                                <label class="label">IP Passthrough MAC</label>
+                                <p class="control has-icons-left has-icons-right">
+                                  <input class="input" type="text" placeholder="AB:CD:DE:F0:12:34" required />
+                                  <span class="icon is-small is-left">
+                                    <i class="fas fa-envelope"></i>
+                                  </span>
+                                  <span class="icon is-small is-right">
+                                    <i class="fas fa-check"></i>
+                                  </span>
+                                </p>
+                              </div>
+                              <div class="field">
+                                <p class="control has-icons-left">
+                                  <input class="input" type="password" placeholder="Password" />
+                                  <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                  </span>
+                                </p>
+                                <p class="help">
+                                  Type the MAC address of the device.
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -281,12 +311,12 @@
                             <label class="label">Onboard DNS Proxy Mode</label>
                             <p class="control has-icons-left">
                               <span class="select">
-                                <select>
+                                <select id="dns-proxy-mode">
                                   <option selected>
                                     Select Onboard DNS Proxy
                                   </option>
-                                  <option>Enable</option>
-                                  <option>Disable</option>
+                                  <option value="Enabled">Enabled</option>
+                                  <option value="Disabled">Disabled</option>
                                 </select>
                               </span>
                               <span class="icon is-small is-left">
@@ -373,12 +403,14 @@
                                 disabled
                               />
                               <span class="icon is-small is-right">
-                                <i class="fas fa-exclamation-triangle has-text-warning"></i>
+                                <i
+                                  class="fas fa-exclamation-triangle has-text-warning"
+                                ></i>
                               </span>
                             </div>
                           </div>
                         </div>
-                  
+
                         <div class="cell">
                           <div class="field">
                             <label class="label">Current TTL Value</label>
@@ -390,7 +422,9 @@
                                 disabled
                               />
                               <span class="icon is-small is-right">
-                                <i class="fas fa-exclamation-triangle has-text-warning"></i>
+                                <i
+                                  class="fas fa-exclamation-triangle has-text-warning"
+                                ></i>
                               </span>
                             </div>
                           </div>
@@ -427,11 +461,6 @@
                 class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
               >
                 Apply TTL Settings
-              </a>
-              <a
-                class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
-              >
-                Save Advance Setting
               </a>
               <a
                 class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
