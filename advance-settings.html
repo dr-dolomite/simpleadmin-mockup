@@ -224,7 +224,7 @@
             <div class="card-content">
               <div class="fixed-grid has-1-cols">
                 <div class="grid is-gap-5">
-                  <div class="cell">
+                  <div class="cell advanced-settings">
                     <div class="fixed-grid has-2-cols has-1-cols-mobile">
                       <div class="grid">
                         <div class="cell is-col-span-2 is-col-span-1-mobile">
@@ -235,7 +235,7 @@
                                 <p class="control has-icons-left">
                                   <span class="select">
                                     <select id="ip-passthrough-mode">
-                                      <option selected>
+                                      <option value="placeholder" selected>
                                         Select IP Passthrough Mode
                                       </option>
                                       <option value="Disabled">Disabled</option>
@@ -248,52 +248,48 @@
                                   </span>
                                 </p>
                                 <p class="help">
-                                  Selecting a mode will apply immediately.
+                                  This will reboot the device to apply changes.
                                 </p>
                               </div>
                             </div>
 
                             <div class="column">
                               <div class="field">
-                                <label class="label">IP Passthrough MAC</label>
-                                <p class="control has-icons-left has-icons-right">
-                                  <input class="input" type="text" placeholder="AB:CD:DE:F0:12:34" required />
-                                  <span class="icon is-small is-left">
-                                    <i class="fas fa-envelope"></i>
-                                  </span>
-                                  <span class="icon is-small is-right">
-                                    <i class="fas fa-check"></i>
-                                  </span>
-                                </p>
-                              </div>
-                              <div class="field">
+                                <label class="label">Connected Devices MAC</label>
                                 <p class="control has-icons-left">
-                                  <input class="input" type="password" placeholder="Password" />
+                                  <span class="select">
+                                    <select id="connected-devices">
+                                      <option selected>
+                                        Select Device MAC
+                                      </option>
+                                      <!-- Populate the options here -->
+                                    </select>
+                                  </span>
                                   <span class="icon is-small is-left">
-                                    <i class="fas fa-lock"></i>
+                                    <i class="fas fa-laptop"></i>
                                   </span>
                                 </p>
                                 <p class="help">
-                                  Type the MAC address of the device.
+                                  Selecting a device first before enabling.
                                 </p>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div class="cell">
+                        <div class="cell advanced-settings">
                           <div class="field">
                             <label class="label">USB Modem Protocol</label>
                             <p class="control has-icons-left">
                               <span class="select">
-                                <select>
+                                <select id="usb-modem-protocol">
                                   <option selected>
                                     Select USB Modem Protocol
                                   </option>
-                                  <option>RMNET</option>
-                                  <option>ECM (Recommended)</option>
-                                  <option>MBIM</option>
-                                  <option>RNDIS</option>
+                                  <option value="RMNET">RMNET</option>
+                                  <option value="ECM (Recommended)">ECM (Recommended)</option>
+                                  <option value="MBIM">MBIM</option>
+                                  <option value="RNDIS">RNDIS</option>
                                 </select>
                               </span>
                               <span class="icon is-small is-left">
@@ -301,12 +297,12 @@
                               </span>
                             </p>
                             <p class="help">
-                              Selecting a mode will apply immediately.
+                              Selecting a mode will apply immediately. Requires reboot.
                             </p>
                           </div>
                         </div>
 
-                        <div class="cell">
+                        <div class="cell advanced-settings">
                           <div class="field">
                             <label class="label">Onboard DNS Proxy Mode</label>
                             <p class="control has-icons-left">
@@ -512,7 +508,7 @@
       <div class="modal-card">
         <section class="modal-card-body rounded-edge">
           <p class="subtitle" id="modal-message">
-            Do you want to reboot the device?
+            Do not do any action while the modem is rebooting.
           </p>
           <div id="loading-content" style="display: none">
             <div class="custom-loader"></div>
