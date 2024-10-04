@@ -302,15 +302,15 @@ const eventHandlers = {
 
     if (selectedMode !== currentMode) {
       const commands = {
-        "Disabled": 'AT+QMAP="MPDN_rule",0;+CFUN=1,1',
-        "ETH Only": `AT+QMAP="MPDN_rule",0,1,0,1,1,"${selectedDeviceMAC}";+CFUN=1,1`,
-        "USB Only": `AT+QMAP="MPDN_rule",0,1,0,3,1,"${selectedDeviceMAC}";+CFUN=1,1`
+        "Disabled": 'AT+QMAP="MPDN_rule",0;+QPOWD=1',
+        "ETH Only": `AT+QMAP="MPDN_rule",0,1,0,1,1,"${selectedDeviceMAC}";+QPOWD=1`,
+        "USB Only": `AT+QMAP="MPDN_rule",0,1,0,3,1,"${selectedDeviceMAC}";+QPOWD=1`
       };
 
       const command = commands[selectedMode];
       if (command) {
         uiManager.showLoadingContent();
-        uiManager.startCountdown(80);
+        uiManager.startCountdown(90);
         try {
           await api.sendATCommand(command);
         } catch (error) {
@@ -336,7 +336,7 @@ const eventHandlers = {
       const command = commands[selectedProtocol];
       if (command) {
         uiManager.showLoadingContent();
-        uiManager.startCountdown(80);
+        uiManager.startCountdown(90);
         try {
           await api.sendATCommand(command);
         } catch (error) {
