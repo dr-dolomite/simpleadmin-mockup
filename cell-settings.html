@@ -25,6 +25,7 @@
     <script src="/js/utils/reboot.js"></script>
     <script src="/js/utils/restart-connection.js"></script>
     <script src="/js/cell-settings/fetch-settings.js"></script>
+    <script src="/js/cell-settings/apn-profile.js"></script>
     <script defer src="/js/auth/auth.js"></script>
 
     <script>
@@ -253,7 +254,7 @@
         </div>
 
         <div class="column">
-          <div class="card">
+          <div class="card" id="apnProfileForm">
             <div class="card-header">
               <div class="card-header-title">APN and ICCID Based Locking</div>
             </div>
@@ -287,10 +288,10 @@
                               <span class="select">
                                 <select id="apnPDPType1">
                                   <option selected>Select APN PDP Type</option>
-                                  <option>IPv4 Only</option>
-                                  <option>IPv6 Only</option>
-                                  <option>IPv4 and IPv6</option>
-                                  <option>P2P Protocol</option>
+                                  <option value="IP">IPv4 Only</option>
+                                  <option value="IPV6">IPv6 Only</option>
+                                  <option value="IPV4V6">IPv4 and IPv6</option>
+                                  <option value="PPP">P2P Protocol</option>
                                 </select>
                               </span>
                               <span class="icon is-small is-left">
@@ -344,10 +345,10 @@
                               <span class="select">
                                 <select id="apnPDPType2">
                                   <option selected>Select APN PDP Type</option>
-                                  <option>IPv4 Only</option>
-                                  <option>IPv6 Only</option>
-                                  <option>IPv4 and IPv6</option>
-                                  <option>P2P Protocol</option>
+                                  <option value="IP">IPv4 Only</option>
+                                  <option value="IPV6">IPv6 Only</option>
+                                  <option value="IPV4V6">IPv4 and IPv6</option>
+                                  <option value="PPP">P2P Protocol</option>
                                 </select>
                               </span>
                               <span class="icon is-small is-left">
@@ -380,14 +381,16 @@
               <a
                 href="#"
                 class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
+                id="saveAPNProfile"
               >
-                Save APN
+                Save APN Profile
               </a>
               <a
                 href="#"
                 class="card-footer-item has-text-link has-text-weight-semibold has-text-white"
+                id="resetAPNProfile"
               >
-                Reset APN
+                Reset APN Profile
               </a>
             </div>
           </div>

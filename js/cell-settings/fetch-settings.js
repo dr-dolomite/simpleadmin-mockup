@@ -34,10 +34,10 @@ async function saveSettings() {
     const response = await sendATCommand(atCommand);
     console.log("AT command response:", response);
 
-    await sendATCommand(`AT+CFUN=0`);
+    await sendATCommand(`AT+COPS=2`);
     // Wait for 2 seconds before turning on the modem
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    await sendATCommand(`AT+CFUN=1`);
+    await sendATCommand(`AT+COPS=0`);
 
     // Update current settings after successful save
     currentSettings = { ...updatedSettings };
@@ -57,10 +57,10 @@ async function resetAPN() {
     console.log("AT command response:", response);
 
     // Restart connection after resetting APN settings
-    await sendATCommand("AT+CFUN=0");
+    await sendATCommand("AT+COPS=2");
     // Wait for 2 seconds before turning on the modem
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    await sendATCommand("AT+CFUN=1");
+    await sendATCommand("AT+COPS=0");
     alert("APN settings reset successfully!");
   } catch (error) {
     console.error("Error resetting APN settings:", error);
