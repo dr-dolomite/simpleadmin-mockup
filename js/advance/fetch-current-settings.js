@@ -1,38 +1,57 @@
-// api.js - API related functions
+// API Module - Handles all server communications
 const api = {
-  async fetch(endpoint, options = {}) {
+  async fetchCurrentSettings() {
     try {
-      const response = await fetch(endpoint, options);
+      const response = await fetch("/cgi-bin/advanced_settings.sh");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      const data = await response.json();
+      console.log("Current settings:", data);
+      return data;
     } catch (error) {
-      console.error(`API Error (${endpoint}):`, error);
-      return null;
+      console.error("Error fetching settings:", error);
+      throw error;
     }
   },
 
-  async fetchCurrentSettings() {
-    const data = await this.fetch("/cgi-bin/advanced_settings.sh");
-    console.log("Current settings:", data);
-    return data;
-  },
-
   async fetchConnectedDevices() {
-    const data = await this.fetch("/cgi-bin/fetch_macs.sh");
-    return data;
+    try {
+      const response = await fetch("/cgi-bin/fetch_macs.sh");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching devices:", error);
+      throw error;
+    }
   },
 
   async sendATCommand(command) {
-    return await this.fetch("/cgi-bin/atinout_handler.sh", {
-      method: "POST",
-      body: "command=" + encodeURIComponent(command)
-    });
+    try {
+      const response = await fetch("/cgi-bin/atinout_handler.sh", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: "command=" + encodeURIComponent(command)
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("AT command response:", data);
+      return data;
+    } catch (error) {
+      console.error("Error sending AT command:", error);
+      throw error;
+    }
   }
 };
 
-// uiManager.js - UI related functions
+// UI Manager Module - Handles all DOM interactions and UI updates
 const uiManager = {
   elements: {
     ipPassthrough: () => document.getElementById("ip-passthrough-mode"),
@@ -131,10 +150,48 @@ const uiManager = {
         location.reload();
       }
     }, 1000);
+  },
+
+  // showSuccessMessage(message) {
+  //   // Implement based on your UI framework
+  //   console.log("Success:", message);
+  //   // Example: Show a toast notification
+  //   if (window.bulmaToast) {
+  //     bulmaToast.toast({
+  //       message: message,
+  //       type: 'is-success',
+  //       duration: 3000,
+  //       position: 'top-center',
+  //     });
+  //   }
+  // },
+
+  // showErrorMessage(message) {
+  //   // Implement based on your UI framework
+  //   console.error("Error:", message);
+  //   // Example: Show a toast notification
+  //   if (window.bulmaToast) {
+  //     bulmaToast.toast({
+  //       message: message,
+  //       type: 'is-danger',
+  //       duration: 5000,
+  //       position: 'top-center',
+  //     });
+  //   }
+  // },
+
+  setElementLoading(element, isLoading) {
+    if (isLoading) {
+      element.disabled = true;
+      element.classList.add('is-loading');
+    } else {
+      element.disabled = false;
+      element.classList.remove('is-loading');
+    }
   }
 };
 
-// settingsManager.js - Settings management
+// Settings Manager Module - Handles settings logic and updates
 const settingsManager = {
   async updateSettings(data) {
     const elements = {
@@ -160,16 +217,22 @@ const settingsManager = {
       const mpdnRuleLine = data[0].response.split("\n")[1];
       if (mpdnRuleLine) {
         const mpdnRule = mpdnRuleLine.split(":")[1].trim();
-        elements.ipPassthrough.value = this.getPassthroughModeValue(mpdnRule);
+        const passthroughMode = this.getPassthroughModeValue(mpdnRule);
+        elements.ipPassthrough.value = passthroughMode;
+        elements.ipPassthrough.setAttribute("data-current-mode", passthroughMode);
       }
 
       // Update DNS Proxy
       const dnsProxyLine = data[1].response.split("\n")[1].split(":")[1].split(",")[1].trim();
-      elements.dnsProxy.value = dnsProxyLine === '"disable"' ? "Disabled" : "Enabled";
+      const dnsProxyMode = dnsProxyLine === '"disable"' ? "Disabled" : "Enabled";
+      elements.dnsProxy.value = dnsProxyMode;
+      elements.dnsProxy.setAttribute("data-current-mode", dnsProxyMode);
 
       // Update USB Modem Protocol
       const usbModemProtocolLine = data[2].response.split("\n")[1].split(":")[1].split(",")[1].trim();
-      elements.usbModem.value = this.getUsbModemProtocolValue(usbModemProtocolLine);
+      const usbModemMode = this.getUsbModemProtocolValue(usbModemProtocolLine);
+      elements.usbModem.value = usbModemMode;
+      elements.usbModem.setAttribute("data-current-protocol", usbModemMode);
 
       return true;
     } catch (error) {
@@ -198,44 +261,69 @@ const settingsManager = {
   }
 };
 
-// eventHandlers.js - Event handling
+// Event Handlers Module - Handles all event listeners
 const eventHandlers = {
   async handleDnsProxyChange(e) {
-    const selectedMode = e.target.value;
-    const currentMode = e.target.getAttribute("data-current-mode");
+    const element = e.target;
+    const selectedMode = element.value;
+    const currentMode = element.getAttribute("data-current-mode");
 
     if (selectedMode !== currentMode) {
       const command = selectedMode === "Enabled" 
         ? 'AT+QMAP="DHCPV4DNS","enable"'
         : 'AT+QMAP="DHCPV4DNS","disable"';
-      await api.sendATCommand(command);
+      
+      uiManager.setElementLoading(element, true);
+      
+      try {
+        const response = await api.sendATCommand(command);
+        if (response.output.includes("OK")) {
+          element.setAttribute("data-current-mode", selectedMode);
+          // uiManager.showSuccessMessage("DNS Proxy setting updated successfully");
+        } else {
+          element.value = currentMode;
+          // uiManager.showErrorMessage("Failed to update DNS Proxy setting");
+        }
+      } catch (error) {
+        console.error("Error sending AT command:", error);
+        element.value = currentMode;
+        // uiManager.showErrorMessage("Error updating DNS Proxy setting");
+      } finally {
+        // uiManager.setElementLoading(element, false);
+      }
     }
   },
 
   async handleIpPassthroughChange(e) {
-    const selectedMode = e.target.value;
-    const currentMode = e.target.getAttribute("data-current-mode");
+    const element = e.target;
+    const selectedMode = element.value;
+    const currentMode = element.getAttribute("data-current-mode");
     const selectedDeviceMAC = uiManager.elements.connectedDevices().value;
 
     if (selectedMode !== currentMode) {
       const commands = {
-        "Disabled": 'AT+QMPDN="MPDN_rule",0;+CFUN=1,1',
-        "ETH Only": `AT+QMPDN="MPDN_rule",0,1,0,1,1,"${selectedDeviceMAC}";+CFUN=1,1`,
-        "USB Only": `AT+QMPDN="MPDN_rule",0,1,0,3,1,"${selectedDeviceMAC}";+CFUN=1,1`
+        "Disabled": 'AT+QMAP="MPDN_rule",0;+CFUN=1,1',
+        "ETH Only": `AT+QMAP="MPDN_rule",0,1,0,1,1,"${selectedDeviceMAC}";+CFUN=1,1`,
+        "USB Only": `AT+QMAP="MPDN_rule",0,1,0,3,1,"${selectedDeviceMAC}";+CFUN=1,1`
       };
 
       const command = commands[selectedMode];
       if (command) {
         uiManager.showLoadingContent();
         uiManager.startCountdown(80);
-        await api.sendATCommand(command);
+        try {
+          await api.sendATCommand(command);
+        } catch (error) {
+          uiManager.showErrorMessage("Error updating IP Passthrough mode");
+        }
       }
     }
   },
 
   async handleUsbModemProtocolChange(e) {
-    const selectedProtocol = e.target.value;
-    const currentProtocol = e.target.getAttribute("data-current-protocol");
+    const element = e.target;
+    const selectedProtocol = element.value;
+    const currentProtocol = element.getAttribute("data-current-protocol");
 
     if (selectedProtocol !== currentProtocol) {
       const commands = {
@@ -249,7 +337,11 @@ const eventHandlers = {
       if (command) {
         uiManager.showLoadingContent();
         uiManager.startCountdown(80);
-        await api.sendATCommand(command);
+        try {
+          await api.sendATCommand(command);
+        } catch (error) {
+          uiManager.showErrorMessage("Error updating USB Modem Protocol");
+        }
       }
     }
   },
@@ -264,7 +356,7 @@ const eventHandlers = {
   }
 };
 
-// main.js - Application initialization
+// Application Initialization
 async function init() {
   uiManager.showLoadingSpinners();
 
@@ -277,13 +369,24 @@ async function init() {
     if (settings) {
       const updateSuccess = await settingsManager.updateSettings(settings);
       if (updateSuccess) {
-        uiManager.hideLoadingSpinners();
-        
         // Set up event listeners
-        uiManager.elements.dnsProxy().addEventListener("change", eventHandlers.handleDnsProxyChange);
-        uiManager.elements.ipPassthrough().addEventListener("change", eventHandlers.handleIpPassthroughChange);
-        uiManager.elements.usbModem().addEventListener("change", eventHandlers.handleUsbModemProtocolChange);
-        uiManager.elements.connectedDevices().addEventListener("change", eventHandlers.handleDeviceSelection);
+        const dnsProxyElement = uiManager.elements.dnsProxy();
+        const ipPassthroughElement = uiManager.elements.ipPassthrough();
+        const usbModemElement = uiManager.elements.usbModem();
+        const connectedDevicesElement = uiManager.elements.connectedDevices();
+
+        if (dnsProxyElement) {
+          dnsProxyElement.addEventListener("change", eventHandlers.handleDnsProxyChange);
+        }
+        if (ipPassthroughElement) {
+          ipPassthroughElement.addEventListener("change", eventHandlers.handleIpPassthroughChange);
+        }
+        if (usbModemElement) {
+          usbModemElement.addEventListener("change", eventHandlers.handleUsbModemProtocolChange);
+        }
+        if (connectedDevicesElement) {
+          connectedDevicesElement.addEventListener("change", eventHandlers.handleDeviceSelection);
+        }
       }
     }
 
@@ -292,6 +395,9 @@ async function init() {
     }
   } catch (error) {
     console.error("Initialization error:", error);
+    uiManager.showErrorMessage("Error initializing settings");
+  } finally {
+    uiManager.hideLoadingSpinners();
   }
 }
 
