@@ -29,7 +29,7 @@ escape_json() {
 JSON_RESPONSE="["
 
 # List of AT commands to run, one by one
-for COMMAND in 'AT+CGDCONT?' 'AT+QNWPREFCFG="mode_pref"'; do
+for COMMAND in 'AT+CGDCONT?' 'AT+QNWPREFCFG="mode_pref"' 'AT+QNWPREFCFG="nr5g_disable_mode"'; do
     # Write the command to the input file
     echo "$COMMAND" > "$INPUT_FILE"
 

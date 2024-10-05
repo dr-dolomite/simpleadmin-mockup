@@ -2,22 +2,77 @@
 let currentSettings = {
   apn: "",
   pdpType: "",
-  networkMode: "",
 };
 
 let updatedSettings = {
   apn: "",
   pdpType: "",
-  networkMode: "",
 };
+
+let updatedNetworkMode = "";
+let currentNetworkMode = "";
+
+let currentNr5GModeControl = "";
+let updatedNr5GModeControl = "";
 
 // Function to check if settings have changed
 function haveSettingsChanged() {
   return (
     currentSettings.apn !== updatedSettings.apn ||
-    currentSettings.pdpType !== updatedSettings.pdpType ||
-    currentSettings.networkMode !== updatedSettings.networkMode
+    currentSettings.pdpType !== updatedSettings.pdpType
   );
+}
+
+// Function to check if network mode has changed
+function haveNetworkModeChanged() {
+  console.log("Current network mode:", currentNetworkMode);
+  console.log("Updated network mode:", updatedNetworkMode);
+  return currentNetworkMode !== updatedNetworkMode;
+}
+
+// Function to check if NR5G mode control has changed
+function haveNr5GModeControlChanged() {
+  console.log("Current NR5G mode control:", currentNr5GModeControl);
+  console.log("Updated NR5G mode control:", updatedNr5GModeControl);
+  return currentNr5GModeControl !== updatedNr5GModeControl;
+}
+
+// Function to apply network mode changes immediately
+async function applyNetworkModeChange() {
+  if (!haveNetworkModeChanged()) {
+    alert("No changes detected in the network mode.");
+    return;
+  }
+
+  try {
+    const atCommand = `AT+QNWPREFCFG="mode_pref",${updatedNetworkMode}`;
+    console.log("Sending AT command for network mode change:", atCommand);
+    const response = await sendATCommand(atCommand);
+    console.log("AT command response:", response);
+    alert("Network mode applied successfully!");
+  } catch (error) {
+    console.error("Error applying network mode:", error);
+    alert("Error applying network mode. Please try again.");
+  }
+}
+
+// Function to apply NR5G mode control changes immediately
+async function applyNr5GModeControlChange() {
+  if (!haveNr5GModeControlChanged()) {
+    alert("No changes detected in the NR5G mode control.");
+    return;
+  }
+
+  try {
+    const atCommand = `AT+QNWPREFCFG="nr5g_disable_mode",${updatedNr5GModeControl}`;
+    console.log("Sending AT command for NR5G mode control change:", atCommand);
+    const response = await sendATCommand(atCommand);
+    console.log("AT command response:", response);
+    alert("NR5G mode control applied successfully!");
+  } catch (error) {
+    console.error("Error applying NR5G mode control:", error);
+    alert("Error applying NR5G mode control. Please try again.");
+  }
 }
 
 // Function to send settings to the modem
@@ -28,9 +83,14 @@ async function saveSettings() {
   }
 
   try {
-    const atCommand = `AT+QMBNCFG="AutoSel",0;+CGDCONT=1,"${updatedSettings.pdpType}","${updatedSettings.apn}"`
+    const atCommand = `AT+QMBNCFG="AutoSel",0;+CGDCONT=1,"${updatedSettings.pdpType}","${updatedSettings.apn}"`;
     console.log("Sending AT command:", atCommand);
 
+    // Disable the input fields while the settings are being saved
+    const inputs = document.querySelectorAll("input, select");
+    inputs.forEach((input) => {
+      input.disabled = true;
+    });
     const response = await sendATCommand(atCommand);
     console.log("AT command response:", response);
 
@@ -38,6 +98,11 @@ async function saveSettings() {
     // Wait for 2 seconds before turning on the modem
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await sendATCommand(`AT+COPS=0`);
+
+    // Re-enable the input fields after the settings are saved
+    inputs.forEach((input) => {
+      input.disabled = false;
+    });
 
     // Update current settings after successful save
     currentSettings = { ...updatedSettings };
@@ -156,14 +221,15 @@ async function fetchCellSettings() {
           }
         }
       } else if (item.response.includes("QNWPREFCFG")) {
+        console.log("QNWPREFCFG:", item.response);
         const networkMode = item.response
           .split("\n")[1]
           .replace("+QNWPREFCFG: ", "")
           .split(",")[1]
           .trim();
 
-        currentSettings.networkMode = networkMode;
-        updatedSettings.networkMode = networkMode;
+        currentNetworkMode = networkMode;
+        updatedNetworkMode = networkMode;
 
         const networkSelect = document.getElementById("networkPreference");
         if (networkSelect) {
@@ -177,11 +243,40 @@ async function fetchCellSettings() {
               ? "LTE"
               : "AUTO";
 
-          // Add event listener for network mode changes
+          // Add event listener for network mode changes, if there is, run applyNetworkModeChange
           if (!networkSelect.hasListener) {
             networkSelect.hasListener = true;
             networkSelect.addEventListener("change", (e) => {
-              updatedSettings.networkMode = e.target.value;
+              updatedNetworkMode = e.target.value;
+              applyNetworkModeChange();
+            });
+          }
+        }
+
+        const nr5GModeControl = item.response
+          .split("\n")[1]
+          .split(":")[1]
+          .split(",")[1]
+          .trim();
+
+        console.log("NR5G mode control:", nr5GModeControl);
+
+        currentNr5GModeControl = nr5GModeControl;
+        updatedNr5GModeControl = nr5GModeControl;
+
+        const nr5GControlSelect = document.getElementById("nr5gModeControl");
+
+        if (nr5GControlSelect) {
+          // Set initial value based on actual value from modem
+          nr5GControlSelect.value =
+            nr5GModeControl === "0" ? "0" : nr5GModeControl === "1" ? "1" : "2";
+
+          // Add event listener for NR5G mode control changes, if there is, run applyNr5GModeControlChange
+          if (!nr5GControlSelect.hasListener) {
+            nr5GControlSelect.hasListener = true;
+            nr5GControlSelect.addEventListener("change", (e) => {
+              updatedNr5GModeControl = e.target.value;
+              applyNr5GModeControlChange();
             });
           }
         }
@@ -204,5 +299,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (button.textContent.trim() === "Reset APN") {
       button.addEventListener("click", resetAPN);
     }
+  });
+
+  // For every alert and close button, add event listener to refetch cell settings
+  const alertButtons = document.querySelectorAll(".delete");
+  alertButtons.forEach((button) => {
+    button.addEventListener("click", fetchCellSettings);
   });
 });
