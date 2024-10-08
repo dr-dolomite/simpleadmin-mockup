@@ -61,6 +61,7 @@ if [ "$reset_lte" = "1" ] || [ "$reset_5g" = "1" ]; then
     if [ "$reset_lte" = "1" ] && [ "$reset_5g" = "1" ]; then
         send_at_command "AT+QNWLOCK=\"common/4g\",0"
         send_at_command "AT+QNWLOCK=\"common/5g\",0"
+        send_at_command "AT+QNWPREFCFG=\"mode_pref\",AUTO"
         sleep 1
         send_at_command "AT+COPS=2"
         sleep 1
@@ -75,6 +76,7 @@ if [ "$reset_lte" = "1" ] || [ "$reset_5g" = "1" ]; then
         echo '{"status": "success", "message": "LTE cell lock configuration removed"}'
     else
         send_at_command "AT+QNWLOCK=\"common/5g\",0"
+        send_at_command "AT+QNWPREFCFG=\"mode_pref\",AUTO"
         sleep 1
         send_at_command "AT+COPS=2"
         sleep 1
@@ -204,11 +206,6 @@ apply_cell_lock() {
     if [ -n "$nrpci" ] && [ -n "$nrarfcn" ] && [ -n "$scs" ] && [ -n "$band" ]; then
 
         if ! send_at_command "AT+QNWPREFCFG=\"mode_pref\",NR5G" "Setting network to SA only"; then
-            return 1
-        fi
-        sleep 1
-
-        if ! send_at_command "AT+QNWCFG=\"nr5g_earfcn_lock\",0" "Disable NR5G EARFCN LOCKING"; then
             return 1
         fi
         sleep 1
