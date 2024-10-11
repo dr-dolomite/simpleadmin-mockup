@@ -1,410 +1,363 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Helper function to show notifications
-  function showNotification(message, isError = false) {
-    const existingNotification = document.querySelector(".notification");
-    if (existingNotification) {
-      existingNotification.remove();
+  // State management
+  const state = {
+    isLTECellLockEnabled: false,
+    is5GCellLockEnabled: false
+  };
+
+  // Constants
+  const CONSTANTS = {
+    NOTIFICATION_TIMEOUT: 4000,
+    SCS_DEFAULT: 'Select SCS',
+    ENDPOINTS: {
+      CELL_LOCK: '/cgi-bin/cell-locking/cell-lock.sh',
+      FETCH_CONFIG: '/cgi-bin/cell-locking/fetch-cell-lock.sh'
     }
+  };
 
-    const notification = document.createElement("div");
-    notification.className = `notification ${
-      isError ? "is-danger" : "is-success"
-    } is-light`;
-    notification.innerHTML = `
-            <button class="delete"></button>
-            ${message}
-        `;
-
-    document
-      .querySelector(".column-margin")
-      .insertAdjacentElement("beforebegin", notification);
-
-    setTimeout(() => notification.remove(), 3000);
-    notification
-      .querySelector(".delete")
-      .addEventListener("click", () => notification.remove());
-  }
-
-  // Function to validate numeric inputs
-  function validateNumeric(value, fieldName) {
-    if (value && !/^\d+$/.test(value)) {
-      showNotification(`${fieldName} must be a numeric value`, true);
-      return false;
+  // DOM Elements
+  const elements = {
+    lteFields: ['earfcn1', 'pci1', 'earfcn2', 'pci2', 'earfcn3', 'pci3'],
+    saFields: ['nr-arfcn', 'nr-pci', 'nr-band'],
+    buttons: {
+      saveLTE: document.getElementById('saveLTE'),
+      saveSA: document.getElementById('saveSA'),
+      resetLTE: document.getElementById('resetLTE'),
+      resetSA: document.getElementById('resetSA'),
+      refresh: document.getElementById('refreshConfig')
     }
-    return true;
-  }
+  };
 
-  // Function to validate LTE inputs
-  function validateLTEInputs() {
-    const earfcn1 = document.getElementById("earfcn1").value;
-    const pci1 = document.getElementById("pci1").value;
+  // UI Utilities
+  const UI = {
+    showNotification: (message, isError = false) => {
+      const existingNotification = document.querySelector('.notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
 
-    if (!earfcn1 && !pci1) {
-      return true; // Skip validation if both are empty
-    }
+      const notification = document.createElement('div');
+      notification.className = `notification ${isError ? 'is-danger' : 'is-success'} is-light`;
+      notification.innerHTML = `
+        <button class="delete"></button>
+        ${message}
+      `;
 
-    if (!validateNumeric(earfcn1, "EARFCN 1")) return false;
-    if (!validateNumeric(pci1, "PCI 1")) return false;
+      document.querySelector('.column-margin').insertAdjacentElement('beforebegin', notification);
 
-    if ((earfcn1 && !pci1) || (!earfcn1 && pci1)) {
-      showNotification(
-        "Both EARFCN and PCI must be provided for each pair",
-        true
-      );
-      return false;
-    }
+      const deleteButton = notification.querySelector('.delete');
+      deleteButton.addEventListener('click', () => notification.remove());
 
-    return true;
-  }
+      setTimeout(() => notification.remove(), CONSTANTS.NOTIFICATION_TIMEOUT);
+    },
 
-  // Function to validate 5G-SA inputs
-  function validate5GInputs() {
-    const nrArfcn = document.getElementById("nr-arfcn").value;
-    const nrPci = document.getElementById("nr-pci").value;
-    const scs = document.getElementById("scs").value;
-    const nrBand = document.getElementById("nr-band").value;
+    setButtonLoading: (buttonId, isLoading, text = '') => {
+      const button = document.getElementById(buttonId);
+      if (!button) return;
 
-    if (!nrArfcn && !nrPci && scs === "Select SCS" && !nrBand) {
-      return true; // Skip validation if all empty
-    }
+      button.disabled = isLoading;
+      button.innerHTML = isLoading ? `
+        <span class="icon is-small">
+          <i class="fas fa-spinner fa-pulse"></i>
+        </span>
+        <span class="ml-2">Processing...</span>
+      ` : text;
+    },
 
-    if (!validateNumeric(nrArfcn, "NR ARFCN")) return false;
-    if (!validateNumeric(nrPci, "NR PCI")) return false;
-    if (!validateNumeric(nrBand, "NR Band")) return false;
-    if (scs === "Select SCS") {
-      showNotification("Please select an SCS value", true);
-      return false;
-    }
-
-    return true;
-  }
-
-  // Function to handle LTE cell locking
-  document.getElementById("saveLTE").addEventListener("click", function (e) {
-    e.preventDefault();
-
-    if (!validateLTEInputs()) {
-      return;
-    }
-
-    const formData = {
-      earfcn1: document.getElementById("earfcn1").value,
-      pci1: document.getElementById("pci1").value,
-      earfcn2: document.getElementById("earfcn2").value,
-      pci2: document.getElementById("pci2").value,
-      earfcn3: document.getElementById("earfcn3").value,
-      pci3: document.getElementById("pci3").value,
-    };
-
-    // Disable all inputs once the form is submitted
-    document.querySelectorAll("input").forEach((input) => {
-      input.disabled = true;
-    });
-
-    // Change Lock LTE Cells button text to spinner icon with "Saving... Please wait"
-    document.getElementById("saveLTE").innerHTML = `
-            <span class="icon is-small">
-                <i class="fas fa-spinner fa-pulse"></i>
-            </span>
-            <span class="ml-2">Saving... Please wait</span>
-        `;
-    document.getElementById("saveLTE").disabled = true;
-
-    fetch("/cgi-bin/cell-locking/cell-lock.sh", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: Object.keys(formData)
-        .map((key) => {
-          return (
-            encodeURIComponent(key) + "=" + encodeURIComponent(formData[key])
-          );
-        })
-        .join("&"),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          // Change Lock LTE Cells button text back to normal
-          document.getElementById("saveLTE").innerHTML = "Lock LTE Cells";
-          document.getElementById("saveLTE").disabled = false;
-
-          // Enable all inputs after successful submission
-          document.querySelectorAll("input").forEach((input) => {
-            input.disabled = false;
-          });
-          showNotification("LTE cell lock configured successfully");
-        } else {
-          // Change Lock LTE Cells button text back to normal
-          document.getElementById("saveLTE").innerHTML = "Lock LTE Cells";
-          document.getElementById("saveLTE").disabled = false;
-
-          document.querySelectorAll("input").forEach((input) => {
-            input.disabled = false;
-          });
-          showNotification(
-            // Enable all inputs after failed submission
-            data.message || "Error configuring LTE cell lock",
-            true
-          );
-        }
-      })
-      .catch((error) => {
-        showNotification(
-          "Error configuring LTE cell lock: " + error.message,
-          true
-        );
+    toggleInputs: (disabled) => {
+      document.querySelectorAll('input, select').forEach(input => {
+        input.disabled = disabled;
       });
-  });
+    },
 
-  // Function to handle 5G-SA cell locking
-  document.getElementById("saveSA").addEventListener("click", function (e) {
-    e.preventDefault();
-
-    if (!validate5GInputs()) {
-      return;
+    clearInputs: (fields) => {
+      fields.forEach(fieldId => {
+        const element = document.getElementById(fieldId);
+        if (element) {
+          if (element.tagName === 'SELECT') {
+            element.selectedIndex = 0;
+          } else {
+            element.value = '';
+          }
+        }
+      });
     }
+  };
 
-    const scsValue = document.getElementById("scs").value;
-    const scsNumeric = scsValue === "Select SCS" ? "" : scsValue.split(" ")[0]; // Extract numeric value
+  // Validation Utilities
+  const Validator = {
+    validateNumeric: (value, fieldName) => {
+      if (value && !/^\d+$/.test(value)) {
+        UI.showNotification(`${fieldName} must be a numeric value`, true);
+        return false;
+      }
+      return true;
+    },
 
-    const formData = {
-      nrarfcn: document.getElementById("nr-arfcn").value,
-      nrpci: document.getElementById("nr-pci").value,
-      scs: scsNumeric,
-      band: document.getElementById("nr-band").value,
-    };
+    validateLTEInputs: () => {
+      const earfcn1 = document.getElementById('earfcn1').value;
+      const pci1 = document.getElementById('pci1').value;
 
-    // Disable all inputs once the form is submitted
-    document.querySelectorAll("input").forEach((input) => {
-      input.disabled = true;
-    });
+      if (!earfcn1 && !pci1) return true;
 
-    // Change Lock 5G-SA Cells button text to spinner icon with "Saving... Please wait"
-    document.getElementById("saveSA").innerHTML = `
-            <span class="icon is-small">
-                <i class="fas fa-spinner fa-pulse"></i>
-            </span>
-            <span class="ml-2">Saving... Please wait</span>
-        `;
+      if (!Validator.validateNumeric(earfcn1, 'EARFCN 1')) return false;
+      if (!Validator.validateNumeric(pci1, 'PCI 1')) return false;
 
-    document.getElementById("saveSA").disabled = true;
+      if ((earfcn1 && !pci1) || (!earfcn1 && pci1)) {
+        UI.showNotification('Both EARFCN and PCI must be provided for each pair', true);
+        return false;
+      }
 
-    fetch("/cgi-bin/cell-locking/cell-lock.sh", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: Object.keys(formData)
-        .map((key) => {
-          return (
-            encodeURIComponent(key) + "=" + encodeURIComponent(formData[key])
-          );
-        })
-        .join("&"),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          // Change Lock 5G-SA Cells button text back to normal
-          document.getElementById("saveSA").innerHTML = "Lock 5G-SA Cells";
-          document.getElementById("saveSA").disabled = false;
+      return true;
+    },
 
-          showNotification("5G-SA cell lock configured successfully");
-        } else {
-          // Change Lock 5G-SA Cells button text back to normal
-          document.getElementById("saveSA").innerHTML = "Lock 5G-SA Cells";
-          document.getElementById("saveSA").disabled = false;
+    validate5GInputs: () => {
+      const nrArfcn = document.getElementById('nr-arfcn').value;
+      const nrPci = document.getElementById('nr-pci').value;
+      const scs = document.getElementById('scs').value;
+      const nrBand = document.getElementById('nr-band').value;
 
-          showNotification(
-            data.message || "Error configuring 5G-SA cell lock",
-            true
-          );
+      if (!nrArfcn && !nrPci && scs === CONSTANTS.SCS_DEFAULT && !nrBand) return true;
+
+      if (!Validator.validateNumeric(nrArfcn, 'NR ARFCN')) return false;
+      if (!Validator.validateNumeric(nrPci, 'NR PCI')) return false;
+      if (!Validator.validateNumeric(nrBand, 'NR Band')) return false;
+
+      if (scs === CONSTANTS.SCS_DEFAULT) {
+        UI.showNotification('Please select an SCS value', true);
+        return false;
+      }
+
+      return true;
+    }
+  };
+
+  // Data Utilities
+  const DataUtils = {
+    hasValues: (fields) => {
+      return fields.some(field => {
+        const element = document.getElementById(field);
+        if (element.tagName === 'SELECT') {
+          return element.value !== CONSTANTS.SCS_DEFAULT;
         }
-      })
-      .catch((error) => {
-        showNotification(
-          "Error configuring 5G-SA cell lock: " + error.message,
-          true
-        );
+        return element.value.trim() !== '';
       });
-  });
+    },
 
-  // Function to handle LTE reset
-  document.getElementById("resetLTE").addEventListener("click", function (e) {
-    e.preventDefault();
+    getFormData: (fields) => {
+      return fields.reduce((acc, field) => {
+        acc[field] = document.getElementById(field).value;
+        return acc;
+      }, {});
+    }
+  };
 
-    // Disable the button once clicked
-    document.getElementById("resetLTE").disabled = true;
+  // API Handlers
+  const API = {
+    async makeRequest(endpoint, method = 'GET', body = null) {
+      try {
+        const response = await fetch(endpoint, {
+          method,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          ...(body && { body: new URLSearchParams(body).toString() })
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    },
 
-    // Change button text to spinner icon with "Resetting... Please wait"
-    document.getElementById("resetLTE").innerHTML = `
-            <span class="icon is-small">
-                <i class="fas fa-spinner fa-pulse"></i>
-            </span>
-            <span class="ml-2">Resetting... Please wait</span>
-        `;
+    async saveLTEConfiguration(formData) {
+      return API.makeRequest(CONSTANTS.ENDPOINTS.CELL_LOCK, 'POST', formData);
+    },
 
-    fetch("/cgi-bin/cell-locking/cell-lock.sh", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: "reset_lte=1",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          // Clear all LTE inputs
-          document.getElementById("earfcn1").value = "";
-          document.getElementById("pci1").value = "";
-          document.getElementById("earfcn2").value = "";
-          document.getElementById("pci2").value = "";
-          document.getElementById("earfcn3").value = "";
-          document.getElementById("pci3").value = "";
+    async save5GConfiguration(formData) {
+      return API.makeRequest(CONSTANTS.ENDPOINTS.CELL_LOCK, 'POST', formData);
+    },
 
-          // Change Reset LTE Cells button text back to normal
-          document.getElementById("resetLTE").innerHTML = "Reset LTE Cells";
-          document.getElementById("resetLTE").disabled = false;
+    async resetConfiguration(type) {
+      return API.makeRequest(CONSTANTS.ENDPOINTS.CELL_LOCK, 'POST', {
+        [`reset_${type}`]: '1'
+      });
+    },
 
-          showNotification("LTE cell lock reset successfully");
+    async fetchConfigurations() {
+      return API.makeRequest(CONSTANTS.ENDPOINTS.FETCH_CONFIG);
+    }
+  };
+
+  // Event Handlers
+  const EventHandlers = {
+    async handleLTESave(e) {
+      e.preventDefault();
+      if (!Validator.validateLTEInputs()) return;
+
+      if (state.is5GCellLockEnabled || DataUtils.hasValues(elements.saFields)) {
+        UI.showNotification('LTE cell lock cannot be configured when 5G-SA cell lock is enabled', true);
+        return;
+      }
+
+      try {
+        UI.toggleInputs(true);
+        UI.setButtonLoading('saveLTE', true);
+
+        const formData = DataUtils.getFormData(elements.lteFields);
+        const response = await API.saveLTEConfiguration(formData);
+
+        if (response.status === 'success') {
+          state.isLTECellLockEnabled = true;
+          state.is5GCellLockEnabled = false;
+          UI.showNotification('LTE cell lock configured successfully');
         } else {
-          // Change Reset LTE Cells button text back to normal
-          document.getElementById("resetLTE").innerHTML = "Reset LTE Cells";
-          document.getElementById("resetLTE").disabled = false;
-
-          showNotification(
-            data.message || "Error resetting LTE cell lock",
-            true
-          );
+          UI.showNotification(response.message || 'Error configuring LTE cell lock', true);
         }
-      })
-      .catch((error) => {
-        showNotification(
-          "Error resetting LTE cell lock: " + error.message,
-          true
-        );
-      });
-  });
+      } catch (error) {
+        UI.showNotification(`Error configuring LTE cell lock: ${error.message}`, true);
+      } finally {
+        UI.toggleInputs(false);
+        UI.setButtonLoading('saveLTE', false, 'Lock LTE Cells');
+      }
+    },
 
-  // Function to handle 5G-SA reset
-  document.getElementById("resetSA").addEventListener("click", function (e) {
-    e.preventDefault();
+    async handle5GSave(e) {
+      e.preventDefault();
+      if (!Validator.validate5GInputs()) return;
 
-    // Change button text to spinner icon with "Resetting... Please wait"
-    document.getElementById("resetSA").innerHTML = `
-            <span class="icon is-small">
-                <i class="fas fa-spinner fa-pulse"></i>
-            </span>
-            <span class="ml-2">Resetting... Please wait</span>
-        `;
-    document.getElementById("resetSA").disabled = true;
+      if (state.isLTECellLockEnabled || DataUtils.hasValues(elements.lteFields)) {
+        UI.showNotification('5G-SA cell lock cannot be configured when LTE cell lock is enabled', true);
+        return;
+      }
 
-    fetch("/cgi-bin/cell-locking/cell-lock.sh", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: "reset_5g=1",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          // Clear all 5G-SA inputs
-          document.getElementById("nr-arfcn").value = "";
-          document.getElementById("nr-pci").value = "";
-          document.getElementById("scs").selectedIndex = 0;
-          document.getElementById("nr-band").value = "";
+      try {
+        UI.toggleInputs(true);
+        UI.setButtonLoading('saveSA', true);
 
-          // Change Reset 5G-SA Cells button text back to normal
-          document.getElementById("resetSA").innerHTML = "Reset 5G-SA Cells";
-          document.getElementById("resetSA").disabled = false;
+        const scsValue = document.getElementById('scs').value;
+        const formData = {
+          nrarfcn: document.getElementById('nr-arfcn').value,
+          nrpci: document.getElementById('nr-pci').value,
+          scs: scsValue === CONSTANTS.SCS_DEFAULT ? '' : scsValue.split(' ')[0],
+          band: document.getElementById('nr-band').value
+        };
 
-          showNotification("5G-SA cell lock reset successfully");
+        const response = await API.save5GConfiguration(formData);
+
+        if (response.status === 'success') {
+          state.is5GCellLockEnabled = true;
+          state.isLTECellLockEnabled = false;
+          UI.showNotification('5G-SA cell lock configured successfully');
         } else {
-          // Change Reset 5G-SA Cells button text back to normal
-          document.getElementById("resetSA").innerHTML = "Reset 5G-SA Cells";
-          document.getElementById("resetSA").disabled = false;
-
-          showNotification(
-            data.message || "Error resetting 5G-SA cell lock",
-            true
-          );
+          UI.showNotification(response.message || 'Error configuring 5G-SA cell lock', true);
         }
-      })
-      .catch((error) => {
-        showNotification(
-          "Error resetting 5G-SA cell lock: " + error.message,
-          true
-        );
-      });
-  });
+      } catch (error) {
+        UI.showNotification(`Error configuring 5G-SA cell lock: ${error.message}`, true);
+      } finally {
+        UI.toggleInputs(false);
+        UI.setButtonLoading('saveSA', false, 'Lock 5G-SA Cells');
+      }
+    },
 
-  // Function to fetch and display existing configurations
-  function fetchConfigurations() {
-    fetch("/cgi-bin/cell-locking/fetch-cell-lock.sh")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Fetched data:", data); // Debug log
+    async handleLTEReset(e) {
+      e.preventDefault();
+      try {
+        UI.setButtonLoading('resetLTE', true);
+        const response = await API.resetConfiguration('lte');
 
-        if (data.status === "success" && data.configurations) {
-          // Fill LTE configurations
-          const lte = data.configurations.lte;
+        if (response.status === 'success') {
+          UI.clearInputs(elements.lteFields);
+          state.isLTECellLockEnabled = false;
+          UI.showNotification('LTE cell lock reset successfully');
+        } else {
+          UI.showNotification(response.message || 'Error resetting LTE cell lock', true);
+        }
+      } catch (error) {
+        UI.showNotification(`Error resetting LTE cell lock: ${error.message}`, true);
+      } finally {
+        UI.setButtonLoading('resetLTE', false, 'Reset LTE Cells');
+      }
+    },
+
+    async handle5GReset(e) {
+      e.preventDefault();
+      try {
+        UI.setButtonLoading('resetSA', true);
+        const response = await API.resetConfiguration('5g');
+
+        if (response.status === 'success') {
+          UI.clearInputs([...elements.saFields, 'scs']);
+          state.is5GCellLockEnabled = false;
+          UI.showNotification('5G-SA cell lock reset successfully');
+        } else {
+          UI.showNotification(response.message || 'Error resetting 5G-SA cell lock', true);
+        }
+      } catch (error) {
+        UI.showNotification(`Error resetting 5G-SA cell lock: ${error.message}`, true);
+      } finally {
+        UI.setButtonLoading('resetSA', false, 'Reset 5G-SA Cells');
+      }
+    },
+
+    async handleRefresh(e) {
+      e?.preventDefault();
+      try {
+        const data = await API.fetchConfigurations();
+        
+        if (data.status === 'success' && data.configurations) {
+          const { lte, sa } = data.configurations;
+
           if (lte) {
-            if (lte.earfcn1)
-              document.getElementById("earfcn1").value = lte.earfcn1;
-            if (lte.pci1) document.getElementById("pci1").value = lte.pci1;
-            if (lte.earfcn2)
-              document.getElementById("earfcn2").value = lte.earfcn2;
-            if (lte.pci2) document.getElementById("pci2").value = lte.pci2;
-            if (lte.earfcn3)
-              document.getElementById("earfcn3").value = lte.earfcn3;
-            if (lte.pci3) document.getElementById("pci3").value = lte.pci3;
+            state.isLTECellLockEnabled = true;
+            state.is5GCellLockEnabled = false;
+            elements.lteFields.forEach(field => {
+              if (lte[field]) document.getElementById(field).value = lte[field];
+            });
           }
 
-          // Fill 5G-SA configurations
-          const sa = data.configurations.sa;
           if (sa) {
-            if (sa.nrarfcn)
-              document.getElementById("nr-arfcn").value = sa.nrarfcn;
-            if (sa.nrpci) document.getElementById("nr-pci").value = sa.nrpci;
-            if (sa.band) document.getElementById("nr-band").value = sa.band;
-
-            // Handle SCS dropdown
-            if (sa.scs) {
-              const scsSelect = document.getElementById("scs");
-              for (let i = 0; i < scsSelect.options.length; i++) {
-                if (scsSelect.options[i].value === sa.scs) {
-                  scsSelect.selectedIndex = i;
-                  break;
-                }
+            state.is5GCellLockEnabled = true;
+            state.isLTECellLockEnabled = false;
+            elements.saFields.forEach(field => {
+              if (sa[field.replace('-', '')]) {
+                document.getElementById(field).value = sa[field.replace('-', '')];
               }
+            });
+
+            if (sa.scs) {
+              const scsSelect = document.getElementById('scs');
+              Array.from(scsSelect.options).some((option, index) => {
+                if (option.value === sa.scs) {
+                  scsSelect.selectedIndex = index;
+                  return true;
+                }
+                return false;
+              });
             }
           }
-        } else {
-          console.log("No configurations found or error in response");
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching configurations:", error);
-        showNotification(
-          "Error fetching configurations: " + error.message,
-          true
-        );
-      });
+      } catch (error) {
+        console.error('Error fetching configurations:', error);
+        UI.showNotification(`Error fetching configurations: ${error.message}`, true);
+      }
+    }
+  };
+
+  // Initialize event listeners
+  function initializeEventListeners() {
+    elements.buttons.saveLTE?.addEventListener('click', EventHandlers.handleLTESave);
+    elements.buttons.saveSA?.addEventListener('click', EventHandlers.handle5GSave);
+    elements.buttons.resetLTE?.addEventListener('click', EventHandlers.handleLTEReset);
+    elements.buttons.resetSA?.addEventListener('click', EventHandlers.handle5GReset);
+    elements.buttons.refresh?.addEventListener('click', EventHandlers.handleRefresh);
   }
 
-  // Call fetchConfigurations when the page loads
-  fetchConfigurations();
-
-  // Optional: Add a refresh button if needed
-  if (document.getElementById("refreshConfig")) {
-    document
-      .getElementById("refreshConfig")
-      .addEventListener("click", function (e) {
-        e.preventDefault();
-        fetchConfigurations();
-      });
+  // Initialize the application
+  function initialize() {
+    initializeEventListeners();
+    EventHandlers.handleRefresh();
   }
+
+  initialize();
 });
